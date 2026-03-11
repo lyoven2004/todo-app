@@ -1,6 +1,7 @@
 ## Description
  
-Describe the frontend task.
+<!-- Describe the frontend task -->
+
 ---
 
 ## DoD
