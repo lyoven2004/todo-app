@@ -1,6 +1,6 @@
 ---
-name: User Story Template
-about: Create a user story including clearly defined acceptance criteria
+name: Backend Task Template
+about: Create a backend task including clearly defined acceptance criteria
 title: ""
 labels: ""
 assignees: ""

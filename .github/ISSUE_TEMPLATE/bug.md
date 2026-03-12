@@ -1,6 +1,6 @@
 ---
-name: User Story Template
-about: Create a user story including clearly defined acceptance criteria
+name: Bug Template
+about: Resolve a bug including clearly defined acceptance criteria
 title: ""
 labels: ""
 assignees: ""
