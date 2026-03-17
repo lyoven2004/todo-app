@@ -22,9 +22,6 @@ coverage
 # env
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
 
 # OS
 .DS_Store
@@ -46,3 +43,7 @@ pids
 
 # node diagnostic
 report.*.json
+
+# backend
+backend/node_modules
+backend/.env
