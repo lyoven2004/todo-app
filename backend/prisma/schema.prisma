@@ -31,31 +31,42 @@ model Task {
   title       String
   description String?
 
-  status      TaskStatus
-  priority    TaskPriority
+  status      TaskStatus @default(NOT_STARTED)
+  priority    TaskPriority @default(LOW)
 
   userId      String
-  user        User @relation(fields: [userId], references: [id])
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   categoryId  String?
-  category    Category? @relation(fields: [categoryId], references: [id])
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
-  deadline    DateTime?
-
-  isArchived  Boolean  @default(false)
+  expiredAt   DateTime?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, priority])
+  @@index([userId, categoryId])
+  @@index([userId, expiredAt])
+  @@index([userId, createdAt])
 }
 
 model Category {
-  id     String @id @default(uuid())
-  name   String
+  id         String @id @default(uuid())
+  name       String
 
-  userId String
-  user   User @relation(fields: [userId], references: [id])
+  userId     String
+  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  tasks  Task[]
+  tasks      Task[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, name])
+  @@index([userId])
 }
 
 enum TaskStatus {
