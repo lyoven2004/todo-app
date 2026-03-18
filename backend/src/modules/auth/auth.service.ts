@@ -2,6 +2,8 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { RegisterDto } from './dto/register.dto';
 import { UserRepository } from '../users/repositories/user.repository';
 import * as bcrypt from 'bcrypt';
+import { UserEntity } from '../users/entities/user.entity';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -18,14 +20,24 @@ export class AuthService {
             throw new BadRequestException('Email already exists');
         }
 
-        const SALT_ROUNDS = 10;
-        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+        const hashedPassword = await bcrypt.hash(password, process.env.SALT_ROUNDS);
+
+        const now = new Date();
+
+        const userEntity = UserEntity.create({
+            id: randomUUID(),
+            email,
+            passwordHash: hashedPassword,
+            name,
+            createdAt: now,
+            updatedAt: now,
+        })
 
         try {
             const user = await this.userRepository.create({
-                email: emailNormalized,
-                password: hashedPassword,
-                name: name.trim(),
+                email: userEntity.email,
+                password: userEntity.passwordHash,
+                name: userEntity.name,
             });
 
             return {

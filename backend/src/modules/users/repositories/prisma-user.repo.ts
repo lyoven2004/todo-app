@@ -3,15 +3,16 @@ import { User } from '@prisma/client'
 import { PrismaService } from 'prisma/prisma.service';
 import {
   CreateUserRepositoryInput,
-  UserRecord,
   UserRepository,
 } from './user.repository';
+import { UserEntity } from '../entities/user.entity';
+
 
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createUserRepositoryInput: CreateUserRepositoryInput): Promise<UserRecord> {
+  async create(createUserRepositoryInput: CreateUserRepositoryInput): Promise<UserEntity> {
     const user = await this.prisma.user.create({
       data: {
         email: createUserRepositoryInput.email,
@@ -23,7 +24,7 @@ export class PrismaUserRepository implements UserRepository {
     return this.toUserRecord(user);
   }
 
-  async findById(id: string): Promise<UserRecord | null> {
+  async findById(id: string): Promise<UserEntity | null> {
     const user = await this.prisma.user.findUnique({
       where: { id },
     });
@@ -33,7 +34,7 @@ export class PrismaUserRepository implements UserRepository {
     return this.toUserRecord(user);
   }
 
-  async findByEmail(email: string): Promise<UserRecord | null> {
+  async findByEmail(email: string): Promise<UserEntity | null> {
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -43,14 +44,14 @@ export class PrismaUserRepository implements UserRepository {
     return this.toUserRecord(user);
   }
 
-  private toUserRecord(user: User): UserRecord {
-    return {
+  private toUserRecord(user: User): UserEntity {
+    return UserEntity.create({
       id: user.id,
       email: user.email,
-      password: user.password,
+      passwordHash: user.password,
       name: user.name,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-    };
+    });
   }
 }
