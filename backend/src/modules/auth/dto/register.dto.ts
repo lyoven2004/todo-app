@@ -1,8 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator'
-import { EphemeralKeyInfo } from 'tls'
 
-export class CreateUserDto {
-
+export class RegisterDto {
     @IsEmail()
     email: string
 
