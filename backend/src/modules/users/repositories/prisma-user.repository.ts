@@ -10,7 +10,7 @@ import { UserEntity } from '../entities/user.entity';
 
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(createUserRepositoryInput: CreateUserRepositoryInput): Promise<UserEntity> {
     const user = await this.prisma.user.create({
