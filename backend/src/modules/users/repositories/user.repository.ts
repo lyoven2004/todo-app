@@ -1,14 +1,14 @@
-import { UserEntity } from '../entities/user.entity';
+import { TUser } from "../entites/users.entity";
 
-export type CreateUserRepositoryInput = {
+export type TCreateUserRepositoryInput = {
     email: string
     password: string
     name: string
 };
 
-export abstract class UserRepository {
-    abstract create(data: CreateUserRepositoryInput): Promise<UserEntity>;
-    abstract findById(id: string): Promise<UserEntity | null>;
-    abstract findByEmail(email: string): Promise<UserEntity | null>;
+export interface IUserRepository {
+    create(data: TCreateUserRepositoryInput): Promise<TUser>;
+    findById(id: string): Promise<TUser | null>;
+    findByEmail(email: string): Promise<TUser | null>;
 }
 
