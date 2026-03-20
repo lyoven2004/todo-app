@@ -8,7 +8,9 @@ export class PrismaTaskRepository implements ITaskRepository {
     constructor(private readonly prisma: PrismaService) { }
 
     async create(data: TCreateTaskInput): Promise<TTask> {
-        const task = await this.prisma.task.create({ data });
+        const task = await this.prisma.task.create({ 
+            data: this.toPrismaCreateData(data) 
+        });
 
         return this.toTask(task);
     }
@@ -23,6 +25,27 @@ export class PrismaTaskRepository implements ITaskRepository {
         return tasks.map(this.toTask);
     }
 
+    private toPrismaCreateData(data: TCreateTaskInput) {
+        return {
+            title: data.title,
+            description: data.description,
+            status: data.status,
+            priority: data.priority,
+            expiredAt: data.expiredAt,
+            user: {
+                connect: {
+                    id: data.userId,
+                },
+            },
+            category: data.categoryId
+                ? {
+                    connect: {
+                        id: data.categoryId,
+                    },
+                }
+                : undefined,
+        };
+    }
     private toTask(task: any): TTask {
         return {
             ...task,

@@ -1,11 +1,11 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
-import { TASK_REPOSITORY } from './repositories/task-token';
-import type { ITaskRepository, TCreateTaskInput } from './repositories/task.repository';
-import { TaskPriority, TaskStatus, TTask } from './entities/task.entity';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CATEGORY_REPOSITORY } from '../categories/repositories/category-token';
 import type { ICategoryRepository } from '../categories/repositories/category.repository';
+import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
+import { TaskPriority, TaskStatus, TTask } from './entities/task.entity';
+import { TASK_REPOSITORY } from './repositories/task-token';
+import type { ITaskRepository, TCreateTaskInput } from './repositories/task.repository';
 
 @Injectable()
 export class TasksService {
@@ -26,12 +26,7 @@ export class TasksService {
       );
 
       if (!category) {
-        throw new ForbiddenException('Invalid category');
-      }
-
-
-      if (category.userId !== userId) {
-        throw new ForbiddenException('Category does not belong to user');
+        throw new NotFoundException('Invalid category');
       }
     }
 

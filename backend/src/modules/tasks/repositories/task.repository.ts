@@ -11,7 +11,7 @@ export type TCreateTaskInput = {
 };
 
 export interface ITaskRepository {
-    create(data: TCreateTaskInput): Promise<TTask>;
-    findById(id: string): Promise<TTask | null>;
-    findByUserId(userId: string): Promise<TTask[]>;
+  create(data: TCreateTaskInput): Promise<TTask>;
+  findById(id: string): Promise<TTask | null>;
+  findByUserId(userId: string): Promise<TTask[]>;
 }
