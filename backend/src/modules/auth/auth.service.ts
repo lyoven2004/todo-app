@@ -6,19 +6,24 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
-import { createHash, randomBytes } from 'crypto';
-import ms from 'ms';
+import { randomBytes } from 'crypto';
 
-import type { UserRepository } from '../users/repositories/user.repository';
-import { USER_REPOSITORY } from '../users/repositories/user.tokens';
-import { RefreshRepository } from './repositories/refresh-token-repository';
+import type { IUserRepository } from '../users/repositories/user.repository';
+import { USER_REPOSITORY } from '../users/repositories/user.token';
+import type { IRefreshRepository } from './repositories/refresh-token.repository';
+import { REFRESH_TOKEN_REPOSITORY } from './repositories/refresh-token';
+
+import { getExpirationDate } from 'src/common/utils/time.util';
 
 @Injectable()
 export class AuthService {
     constructor(
         @Inject(USER_REPOSITORY)
-        private userRepository: UserRepository,
-        private refreshRepository: RefreshRepository,
+        private userRepository: IUserRepository,
+
+        @Inject(REFRESH_TOKEN_REPOSITORY)
+        private refreshRepository: IRefreshRepository,
+        
         private jwtService: JwtService,
         private configService: ConfigService
     ) { }
@@ -85,17 +90,22 @@ export class AuthService {
 
         const rawRefreshToken = randomBytes(64).toString('hex');
 
-        const tokenHash = createHash('sha256')
-            .update(rawRefreshToken)
-            .digest('hex');
-
         const expiresIn = this.configService.get('JWT_REFRESH_EXPIRES')!;
-        const expiresAt = new Date(Date.now() + ms(expiresIn));
+
+        const token = await this.jwtService.signAsync(
+            { rawRefreshToken },
+            {
+                secret: this.configService.get('JWT_REFRESH_SECRET')!,
+                expiresIn
+            }
+        );
+
+        const expiresAt = getExpirationDate(expiresIn);
 
         try {
             await this.refreshRepository.create({
                 userId: user.id,
-                tokenHash,
+                token,
                 expiresAt,
             });
 
