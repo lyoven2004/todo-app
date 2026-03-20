@@ -4,13 +4,13 @@ import {
   CreateUserRepositoryInput,
   UserRepository,
 } from './user.repository';
-import { User } from '@prisma/client';
+import { TUser } from '../entites/users.entity';
 
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
   constructor(private readonly prisma: PrismaService) { }
 
-  async create(createUserRepositoryInput: CreateUserRepositoryInput): Promise<User> {
+  async create(createUserRepositoryInput: CreateUserRepositoryInput): Promise<TUser> {
 
     return this.prisma.user.create({
       data: {
@@ -21,13 +21,13 @@ export class PrismaUserRepository implements UserRepository {
     });
   }
 
-  async findById(id: string): Promise<User | null> {
+  async findById(id: string): Promise<TUser | null> {
     return this.prisma.user.findUnique({
       where: { id },
     });
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<TUser | null> {
     return this.prisma.user.findUnique({
       where: { email },
     });

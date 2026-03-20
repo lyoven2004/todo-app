@@ -3,8 +3,8 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { ConfigModule } from '@nestjs/config';
-import { RefreshRepository } from './repositories/refresh-repository';
-import { PrismaRefreshRepository } from './repositories/prisma-refresh-repository';
+import { RefreshRepository } from './repositories/refresh-token-repository';
+import { PrismaRefreshRepository } from './repositories/prisma-refresh-token-repository';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({

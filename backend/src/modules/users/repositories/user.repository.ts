@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { TUser } from "../entites/users.entity";
 
 export type CreateUserRepositoryInput = {
     email: string
@@ -6,9 +6,9 @@ export type CreateUserRepositoryInput = {
     name: string
 };
 
-export abstract class UserRepository {
-    abstract create(data: CreateUserRepositoryInput): Promise<User>;
-    abstract findById(id: string): Promise<User | null>;
-    abstract findByEmail(email: string): Promise<User | null>;
+export interface UserRepository {
+    create(data: CreateUserRepositoryInput): Promise<TUser>;
+    findById(id: string): Promise<TUser | null>;
+    findByEmail(email: string): Promise<TUser | null>;
 }
 

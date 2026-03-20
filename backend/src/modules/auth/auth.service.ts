@@ -1,20 +1,21 @@
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
-import { UserRepository } from '../users/repositories/user.repository';
+import type { UserRepository } from '../users/repositories/user.repository';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { createHash, randomBytes } from 'crypto';
 import ms from 'ms';
-import { REPLCommand } from 'repl';
-import { RefreshRepository } from './repositories/refresh-repository';
+import { RefreshRepository } from './repositories/refresh-token-repository';
+import { USER_REPOSITORY } from '../users/repositories/user.tokens';
 
 @Injectable()
 export class AuthService {
     constructor(
-        private refreshRepository: RefreshRepository,
+        @Inject(USER_REPOSITORY)
         private userRepository: UserRepository,
+        private refreshRepository: RefreshRepository,
         private jwtService: JwtService,
         private configService: ConfigService
     ) { }
