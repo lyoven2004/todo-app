@@ -1,4 +1,4 @@
-import { RefreshToken } from '@prisma/client';
+import { TRefreshToken } from '../entities/refresh-token.entity';
 
 export type CreateRefreshTokenInput = {
   userId: string;
@@ -7,8 +7,8 @@ export type CreateRefreshTokenInput = {
 };
 
 export abstract class RefreshRepository {
-  abstract create(data: CreateRefreshTokenInput): Promise<RefreshToken>;
-  abstract findById(id: string): Promise<RefreshToken | null>;
-  abstract findByUserId(userId: string): Promise<RefreshToken[]>;
-  abstract revoke(id: string): Promise<RefreshToken>;
+  abstract create(data: CreateRefreshTokenInput): Promise<TRefreshToken>;
+  abstract findById(id: string): Promise<TRefreshToken | null>;
+  abstract findByUserId(userId: string): Promise<TRefreshToken[]>;
+  abstract revoke(id: string): Promise<TRefreshToken>;
 }
