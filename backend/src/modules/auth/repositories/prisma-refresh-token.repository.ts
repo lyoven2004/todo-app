@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "prisma/prisma.service";
-import { CreateRefreshTokenInput, IRefreshRepository } from "./refresh-token.repository";
+import { TCreateRefreshTokenInput, IRefreshRepository } from "./refresh-token.repository";
 
 @Injectable()
 export class PrismaRefreshRepository implements IRefreshRepository {
     constructor(private readonly prisma: PrismaService) { }
 
-    async create(data: CreateRefreshTokenInput) {
+    async create(data: TCreateRefreshTokenInput) {
         return this.prisma.refreshToken.create({ data });
     }
 

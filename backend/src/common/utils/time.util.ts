@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 
-type TimeUnit = 'day' | 'hour' | 'minute' | 'second';
+type TTimeUnit = 'day' | 'hour' | 'minute' | 'second';
 
-const unitMap: Record<string, TimeUnit> = {
+const unitMap: Record<string, TTimeUnit> = {
   d: 'day',
   h: 'hour',
   m: 'minute',
@@ -11,7 +11,7 @@ const unitMap: Record<string, TimeUnit> = {
 
 export function parseExpiresIn(expiresIn: string): {
   value: number;
-  unit: TimeUnit;
+  unit: TTimeUnit;
 } {
   const value = parseInt(expiresIn, 10);
   const unitKey = expiresIn.replace(value.toString(), '');

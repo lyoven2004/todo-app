@@ -23,7 +23,7 @@ export class AuthService {
 
         @Inject(REFRESH_TOKEN_REPOSITORY)
         private refreshRepository: IRefreshRepository,
-        
+
         private jwtService: JwtService,
         private configService: ConfigService
     ) { }
@@ -88,12 +88,13 @@ export class AuthService {
             },
         );
 
-        const rawRefreshToken = randomBytes(64).toString('hex');
-
         const expiresIn = this.configService.get('JWT_REFRESH_EXPIRES')!;
 
         const token = await this.jwtService.signAsync(
-            { rawRefreshToken },
+            {
+                ub: user.id,
+                email: user.email,
+            },
             {
                 secret: this.configService.get('JWT_REFRESH_SECRET')!,
                 expiresIn
@@ -112,7 +113,7 @@ export class AuthService {
             return {
                 message: 'Login success',
                 accessToken,
-                rawRefreshToken
+                token
             };
         } catch (error) {
             console.error("Register error: ", error);
