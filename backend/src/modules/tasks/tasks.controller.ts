@@ -10,8 +10,8 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() dto: CreateTaskDto, @Req('sub') userId: string) {
-    return this.tasksService.create(dto, userId);
+  create(@Body() dto: CreateTaskDto, @Req() user: { sub: string; email: string }) {
+    return this.tasksService.create(dto, user.sub);
   }
 
   @Get()
