@@ -1,4 +1,4 @@
-import { UserEntity } from '../entities/user.entity';
+import { UserEntity } from "../entites/user.entity";
 
 export type CreateUserRepositoryInput = {
     email: string

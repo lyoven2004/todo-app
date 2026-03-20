@@ -2,12 +2,14 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { RegisterDto } from './dto/register.dto';
 import { UserRepository } from '../users/repositories/user.repository';
 import * as bcrypt from 'bcrypt';
-import { UserEntity } from '../users/entities/user.entity';
-import { randomUUID } from 'crypto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-    constructor(private userRepository: UserRepository) { }
+    constructor(
+        private userRepository: UserRepository,
+        private configService: ConfigService
+    ) { }
 
     async register(registerDto: RegisterDto) {
         const { email, name, password } = registerDto;
@@ -20,24 +22,13 @@ export class AuthService {
             throw new BadRequestException('Email already exists');
         }
 
-        const hashedPassword = await bcrypt.hash(password, process.env.SALT_ROUNDS);
-
-        const now = new Date();
-
-        const userEntity = UserEntity.create({
-            id: randomUUID(),
-            email,
-            passwordHash: hashedPassword,
-            name,
-            createdAt: now,
-            updatedAt: now,
-        })
+        const hashedPassword = await bcrypt.hash(password, Number(this.configService.get('SALT_ROUNDS')));
 
         try {
             const user = await this.userRepository.create({
-                email: userEntity.email,
-                password: userEntity.passwordHash,
-                name: userEntity.name,
+                email: emailNormalized,
+                password: hashedPassword,
+                name: name.trim()
             });
 
             return {

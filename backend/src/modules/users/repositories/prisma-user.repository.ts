@@ -5,7 +5,7 @@ import {
   CreateUserRepositoryInput,
   UserRepository,
 } from './user.repository';
-import { UserEntity } from '../entities/user.entity';
+import { UserEntity } from '../entites/user.entity';
 
 
 @Injectable()
@@ -45,10 +45,10 @@ export class PrismaUserRepository implements UserRepository {
   }
 
   private toUserRecord(user: User): UserEntity {
-    return UserEntity.create({
+    return({
       id: user.id,
       email: user.email,
-      passwordHash: user.password,
+      password: user.password,
       name: user.name,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
