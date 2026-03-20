@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "prisma/prisma.service";
 import { TCreateRefreshTokenInput, IRefreshRepository } from "./refresh-token.repository";
+import dayjs from "dayjs";
 
 @Injectable()
 export class PrismaRefreshRepository implements IRefreshRepository {
@@ -22,7 +23,7 @@ export class PrismaRefreshRepository implements IRefreshRepository {
         return this.prisma.refreshToken.update({
             where: { id },
             data: {
-                revokedAt: new Date(),
+                revokedAt: dayjs().toDate(),
             },
         });
     }

@@ -77,11 +77,13 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
+        const payload = {
+            sub: user.id,
+            email: user.email,
+        }
+
         const accessToken = await this.jwtService.signAsync(
-            {
-                sub: user.id,
-                email: user.email,
-            },
+            payload,
             {
                 secret: this.configService.get('JWT_ACCESS_SECRET')!,
                 expiresIn: this.configService.get('JWT_ACCESS_EXPIRES')!,
@@ -90,11 +92,8 @@ export class AuthService {
 
         const expiresIn = this.configService.get('JWT_REFRESH_EXPIRES')!;
 
-        const token = await this.jwtService.signAsync(
-            {
-                ub: user.id,
-                email: user.email,
-            },
+        const refreshToken = await this.jwtService.signAsync(
+            payload,
             {
                 secret: this.configService.get('JWT_REFRESH_SECRET')!,
                 expiresIn
@@ -106,14 +105,14 @@ export class AuthService {
         try {
             await this.refreshRepository.create({
                 userId: user.id,
-                token,
+                token: refreshToken,
                 expiresAt,
             });
 
             return {
                 message: 'Login success',
                 accessToken,
-                token
+                refreshToken
             };
         } catch (error) {
             console.error("Register error: ", error);
