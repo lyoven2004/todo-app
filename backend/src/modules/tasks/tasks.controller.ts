@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } fro
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @Controller('tasks')
 export class TasksController {
@@ -13,8 +14,10 @@ export class TasksController {
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string, @Req() req: any) {
-    return this.tasksService.delete(id, req.userId);
+  delete(
+    @Param('id') id: string,
+    @CurrentUser() user: any) {
+    return this.tasksService.delete(id, user.id);
   }
 
   @Get()
