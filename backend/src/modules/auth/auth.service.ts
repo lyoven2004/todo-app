@@ -14,6 +14,7 @@ import type { IRefreshRepository } from './repositories/refresh-token.repository
 import { REFRESH_TOKEN_REPOSITORY } from './repositories/refresh-token';
 
 import { getExpirationDate } from 'src/common/utils/time.util';
+import { JwtPayload } from './types/jwt-payload.type';
 
 @Injectable()
 export class AuthService {
@@ -77,10 +78,10 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const payload = {
+        const payload: JwtPayload = {
             sub: user.id,
             email: user.email,
-        }
+        };
 
         const accessToken = await this.jwtService.signAsync(
             payload,

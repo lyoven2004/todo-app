@@ -27,7 +27,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
         return category ? this.toCategory(category) : null;
     }
 
-    private toCategory(category: any): TCategory {
+    private toCategory(category: TCategory): TCategory {
         return {
             ...category
         };
