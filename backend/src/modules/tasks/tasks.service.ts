@@ -35,13 +35,13 @@ export class TasksService {
       description: dto.description?.trim() ?? null,
       status: dto.status ?? TaskStatus.NOT_STARTED,
       priority: dto.priority ?? TaskPriority.LOW,
-      userId,
       categoryId: dto.categoryId ?? null,
       expiredAt: dto.expiredAt ? new Date(dto.expiredAt) : null,
     };
 
-    return this.taskRepository.create(data);
+    return this.taskRepository.create(userId, data);
   }
+
 
   findAll() {
     return `This action returns all tasks`;
