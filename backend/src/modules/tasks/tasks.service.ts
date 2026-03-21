@@ -48,10 +48,6 @@ export class TasksService {
   }
 
   async findOne(id: string, userId: string): Promise<TTask> {
-    if (!id) {
-      throw new BadRequestException('Task id is required');
-    }
-
     const task = await this.taskRepository.findByIdAndUserId(id, userId);
 
     if (!task) {
