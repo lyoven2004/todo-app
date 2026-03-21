@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaRefreshRepository } from './repositories/prisma-refresh-token.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { REFRESH_TOKEN_REPOSITORY } from './repositories/refresh-token';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [UsersModule, ConfigModule,
@@ -14,7 +15,9 @@ import { REFRESH_TOKEN_REPOSITORY } from './repositories/refresh-token';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService,
+  providers: [
+    AuthService,
+    JwtStrategy,
     {
       provide: REFRESH_TOKEN_REPOSITORY,
       useClass: PrismaRefreshRepository,
