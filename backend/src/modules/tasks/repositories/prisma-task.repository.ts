@@ -64,7 +64,10 @@ export class PrismaTaskRepository implements ITaskRepository {
                 userId,
             },
         });
-        return this.toTask(task)
+        
+        if (!task) return null;
+
+        return this.toDomain(task)
     }
 
     async delete(id: string): Promise<void> {
@@ -73,32 +76,5 @@ export class PrismaTaskRepository implements ITaskRepository {
         });
     }
 
-    private toPrismaCreateData(data: TCreateTaskInput) {
-        return {
-            title: data.title,
-            description: data.description,
-            status: data.status,
-            priority: data.priority,
-            expiredAt: data.expiredAt,
-            user: {
-                connect: {
-                    id: data.userId,
-                },
-            },
-            category: data.categoryId
-                ? {
-                    connect: {
-                        id: data.categoryId,
-                    },
-                }
-                : undefined,
-        };
-    }
-    private toTask(task: any): TTask {
-        return {
-            ...task,
-            status: task.status as TaskStatus,
-            priority: task.priority as TaskPriority,
-        };
-    }
+
 }
