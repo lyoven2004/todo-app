@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';import type { JwtPayload } from '../auth/types/jwt-payload.type';
+import { UpdateTaskDto } from './dto/update-task.dto'; import type { JwtPayload } from '../auth/types/jwt-payload.type';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @Controller('tasks')
@@ -27,8 +27,9 @@ export class TasksController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tasksService.findOne(+id);
+  findOne(@Param('id') id: string,
+    @CurrentUser('sub') userId: string) {
+    return this.tasksService.findOne(id, userId);
   }
 
   @Patch(':id')

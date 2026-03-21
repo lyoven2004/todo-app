@@ -47,8 +47,14 @@ export class TasksService {
     return `This action returns all tasks`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  async findOne(id: string, userId: string): Promise<TTask> {
+    const task = await this.taskRepository.findByIdAndUserId(id, userId);
+
+    if (!task) {
+      throw new NotFoundException(`Task with id ${id} not found`);
+    }
+
+    return task;
   }
 
   update(id: number, updateTaskDto: UpdateTaskDto) {
