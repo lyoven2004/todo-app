@@ -8,8 +8,6 @@ import {
 import { PrismaService } from "prisma/prisma.service";
 import { ITaskRepository, TCreateTaskInput } from "./task.repository";
 import { TaskPriority, TaskStatus, TTask } from "../entities/task.entity";
-// import { PrismaTaskMapper } from "../mappers/prisma-task.mapper";
-import { CreateTaskDto } from "../dto/create-task.dto";
 
 @Injectable()
 export class PrismaTaskRepository implements ITaskRepository {
