@@ -8,11 +8,9 @@ export class PrismaCategoryRepository implements ICategoryRepository {
     constructor(private readonly prisma: PrismaService) { }
 
     async create(data: TCreateCategoryInput): Promise<TCategory> {
-        const category = await this.prisma.category.create({
-            data,
-        });
 
-        return this.toCategory(category);
+        return this.prisma.category.create({ data });
+
     }
 
     async findByIdAndUserId(id: string, userId: string)
@@ -24,12 +22,6 @@ export class PrismaCategoryRepository implements ICategoryRepository {
             },
         });
 
-        return category ? this.toCategory(category) : null;
-    }
-
-    private toCategory(category: TCategory): TCategory {
-        return {
-            ...category
-        };
+        return category ? category : null;
     }
 }
