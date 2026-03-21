@@ -1,9 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';import type { JwtPayload } from '../auth/types/jwt-payload.type';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import type { JwtPayload } from '../auth/types/jwt-payload.type';
 
 @Controller('tasks')
 export class TasksController {
@@ -11,15 +10,15 @@ export class TasksController {
 
   @Post()
   create(@Body() dto: CreateTaskDto,
-    @CurrentUser() user: JwtPayload) {
-    return this.tasksService.create(dto, user.sub);
+    @CurrentUser('sub') userId: string) {
+    return this.tasksService.create(dto, userId);
   }
 
   @Delete(':id')
   delete(
     @Param('id') id: string,
-    @CurrentUser() user: JwtPayload) {
-    return this.tasksService.delete(id, user.sub);
+    @CurrentUser('sub') userId: string) {
+    return this.tasksService.delete(id, userId);
   }
 
   @Get()
