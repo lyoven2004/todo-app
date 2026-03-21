@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CATEGORY_REPOSITORY } from '../categories/repositories/category-token';
 import type { ICategoryRepository } from '../categories/repositories/category.repository';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -55,7 +55,21 @@ export class TasksService {
     return `This action updates a #${id} task`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  async delete(taskId: string, userId: string): Promise<{ message: string }> {
+    const task = await this.taskRepository.findByIdAndUserId(taskId, userId);
+
+    if (!task) {
+      throw new NotFoundException('Task not found');
+    }
+
+    try {
+      await this.taskRepository.delete(taskId);
+
+      return {
+        message: 'Task deleted successfully',
+      };
+    } catch (error) {
+      throw new BadRequestException('Delete failed');
+    }
   }
 }
