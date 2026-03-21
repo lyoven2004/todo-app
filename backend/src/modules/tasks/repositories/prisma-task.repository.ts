@@ -57,4 +57,48 @@ export class PrismaTaskRepository implements ITaskRepository {
         return tasks.map(this.toDomain);
     }
 
+    async findByIdAndUserId(id: string, userId: string): Promise<TTask | null> {
+        const task = await this.prisma.task.findFirst({
+            where: {
+                id,
+                userId,
+            },
+        });
+        return this.toTask(task)
+    }
+
+    async delete(id: string): Promise<void> {
+        await this.prisma.task.delete({
+            where: { id },
+        });
+    }
+
+    private toPrismaCreateData(data: TCreateTaskInput) {
+        return {
+            title: data.title,
+            description: data.description,
+            status: data.status,
+            priority: data.priority,
+            expiredAt: data.expiredAt,
+            user: {
+                connect: {
+                    id: data.userId,
+                },
+            },
+            category: data.categoryId
+                ? {
+                    connect: {
+                        id: data.categoryId,
+                    },
+                }
+                : undefined,
+        };
+    }
+    private toTask(task: any): TTask {
+        return {
+            ...task,
+            status: task.status as TaskStatus,
+            priority: task.priority as TaskPriority,
+        };
+    }
 }
