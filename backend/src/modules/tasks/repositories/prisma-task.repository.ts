@@ -123,23 +123,14 @@ export class PrismaTaskRepository implements ITaskRepository {
     }
 
     async update(id: string, userId: string, data: TUpdateTaskInput): Promise<TTask> {
-        const task = await this.prisma.task.updateMany({
+        const task = await this.prisma.task.update({
             where: {
                 id,
                 userId
             },
             data,
         });
-
-        if (task.count === 0) {
-            throw new NotFoundException("Task not found");
-        }
-
-        const updated = await this.prisma.task.findUnique({
-            where: { id },
-        });
-
-        return this.toDomain(updated!);
+        return this.toDomain(task);
     }
 
 }

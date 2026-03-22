@@ -60,7 +60,7 @@ export class TasksService {
   async update(id: string, userId: string, dto: UpdateTaskDto)
     : Promise<TTask> {
 
-    if (dto.categoryId !== undefined && dto.categoryId !== null) {
+    if (dto.categoryId) {
       const category = await this.categoryRepository.findByIdAndUserId(
         dto.categoryId,
         userId,
