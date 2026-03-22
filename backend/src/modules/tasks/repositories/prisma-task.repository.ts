@@ -6,7 +6,7 @@ import {
     Prisma,
 } from '@prisma/client';
 import { PrismaService } from "prisma/prisma.service";
-import { ITaskRepository, TCreateTaskInput, TQueryTask } from "./task.repository";
+import { ITaskRepository, TCreateTaskInput, TQueryTask, TUpdateTaskInput } from "./task.repository";
 import { TaskPriority, TaskStatus, TTask } from "../entities/task.entity";
 import { TPaginationResult } from "src/common/types/pagination.type";
 
@@ -122,5 +122,20 @@ export class PrismaTaskRepository implements ITaskRepository {
         });
     }
 
+    async update(id: string, data: TUpdateTaskInput): Promise<TTask> {
+        const task = await this.prisma.task.update({
+            where: { id },
+            data: {
+                ...(data.title !== undefined && { title: data.title }),
+                ...(data.description !== undefined && { description: data.description }),
+                ...(data.status !== undefined && { status: data.status }),
+                ...(data.priority !== undefined && { priority: data.priority }),
+                ...(data.categoryId !== undefined && { categoryId: data.categoryId }),
+                ...(data.expiredAt !== undefined && { expiredAt: data.expiredAt }),
+            },
+        });
+
+        return this.toDomain(task);
+    }
 
 }

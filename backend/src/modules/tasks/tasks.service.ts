@@ -57,8 +57,41 @@ export class TasksService {
     return task;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  async update(
+    taskId: string,
+    dto: UpdateTaskDto,
+    userId: string,
+  ): Promise<TTask> {
+
+    const task = await this.taskRepository.findByIdAndUserId(taskId, userId);
+
+    if (!task) {
+      throw new NotFoundException('Task not found');
+    }
+
+    if (dto.categoryId) {
+      const category = await this.categoryRepository.findByIdAndUserId(
+        dto.categoryId,
+        userId,
+      );
+
+      if (!category) {
+        throw new NotFoundException('Invalid category');
+      }
+    }
+
+    const updateData = {
+      ...(dto.title && { title: dto.title.trim() }),
+      ...(dto.description !== undefined && { description: dto.description?.trim() ?? null }),
+      ...(dto.status && { status: dto.status }),
+      ...(dto.priority && { priority: dto.priority }),
+      ...(dto.categoryId !== undefined && { categoryId: dto.categoryId }),
+      ...(dto.expiredAt !== undefined && {
+        expiredAt: dto.expiredAt ? new Date(dto.expiredAt) : null,
+      }),
+    };
+
+    return this.taskRepository.update(taskId, updateData);
   }
 
   async delete(taskId: string, userId: string): Promise<{ message: string }> {
