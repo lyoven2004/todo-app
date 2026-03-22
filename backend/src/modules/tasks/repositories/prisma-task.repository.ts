@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import {
     Task as PrismaTask,
     TaskStatus as PrismaTaskStatus,
@@ -6,7 +6,7 @@ import {
     Prisma,
 } from '@prisma/client';
 import { PrismaService } from "prisma/prisma.service";
-import { ITaskRepository, TCreateTaskInput, TQueryTask } from "./task.repository";
+import { ITaskRepository, TCreateTaskInput, TQueryTask, TUpdateTaskInput } from "./task.repository";
 import { TaskPriority, TaskStatus, TTask } from "../entities/task.entity";
 import { TPaginationResult } from "src/common/types/pagination.type";
 
@@ -122,5 +122,15 @@ export class PrismaTaskRepository implements ITaskRepository {
         });
     }
 
+    async update(id: string, userId: string, data: TUpdateTaskInput): Promise<TTask> {
+        const task = await this.prisma.task.update({
+            where: {
+                id,
+                userId
+            },
+            data,
+        });
+        return this.toDomain(task);
+    }
 
 }

@@ -5,7 +5,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskPriority, TaskStatus, TTask } from './entities/task.entity';
 import { TASK_REPOSITORY } from './repositories/task-token';
-import type { ITaskRepository, TCreateTaskInput } from './repositories/task.repository';
+import type { ITaskRepository, TCreateTaskInput, TUpdateTaskInput } from './repositories/task.repository';
 import { QueryTasksDto } from './dto/query-task.dto';
 
 @Injectable()
@@ -57,8 +57,28 @@ export class TasksService {
     return task;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  async update(id: string, userId: string, dto: UpdateTaskDto)
+    : Promise<TTask> {
+
+    if (dto.categoryId) {
+      const category = await this.categoryRepository.findByIdAndUserId(
+        dto.categoryId,
+        userId,
+      );
+
+      if (!category) {
+        throw new NotFoundException('Invalid category');
+      }
+    }
+
+    const updateData: TUpdateTaskInput = {
+      ...dto,
+      title: dto.title?.trim(),
+      description: dto.description?.trim(),
+      expiredAt: dto.expiredAt ? new Date(dto.expiredAt) : undefined,
+    };
+
+    return this.taskRepository.update(id, userId, updateData);
   }
 
   async delete(taskId: string, userId: string): Promise<{ message: string }> {
