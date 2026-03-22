@@ -6,6 +6,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskPriority, TaskStatus, TTask } from './entities/task.entity';
 import { TASK_REPOSITORY } from './repositories/task-token';
 import type { ITaskRepository, TCreateTaskInput } from './repositories/task.repository';
+import { QueryTasksDto } from './dto/query-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -42,9 +43,28 @@ export class TasksService {
     return this.taskRepository.create(userId, data);
   }
 
+  async findAll(userId: string, query: QueryTasksDto) {
+    const {
+      status,
+      priority,
+      categoryId,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      page = 1,
+      limit = 10,
+    } = query;
 
-  findAll() {
-    return `This action returns all tasks`;
+    const skip = (page - 1) * limit;
+
+    return this.taskRepository.findAllByUserId(userId, {
+      status,
+      priority,
+      categoryId,
+      sortBy,
+      sortOrder,
+      skip,
+      take: limit,
+    });
   }
 
   async findOne(id: string, userId: string): Promise<TTask> {

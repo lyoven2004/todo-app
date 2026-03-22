@@ -6,7 +6,7 @@ import {
     Prisma,
 } from '@prisma/client';
 import { PrismaService } from "prisma/prisma.service";
-import { ITaskRepository, TCreateTaskInput } from "./task.repository";
+import { ITaskRepository, TCreateTaskInput, TQueryTask } from "./task.repository";
 import { TaskPriority, TaskStatus, TTask } from "../entities/task.entity";
 
 @Injectable()
@@ -64,10 +64,38 @@ export class PrismaTaskRepository implements ITaskRepository {
                 userId,
             },
         });
-        
+
         if (!task) return null;
 
         return this.toDomain(task)
+    }
+
+    async findAllByUserId(userId: string, query: TQueryTask): Promise<TTask[]> {
+        const {
+            status,
+            priority,
+            categoryId,
+            sortBy = 'createdAt',
+            sortOrder = 'desc',
+            skip = 0,
+            take = 10,
+        } = query;
+
+        const tasks = await this.prisma.task.findMany({
+            where: {
+                userId,
+                ...(status && { status }),
+                ...(priority && { priority }),
+                ...(categoryId && { categoryId }),
+            },
+            orderBy: {
+                [sortBy]: sortOrder,
+            },
+            skip,
+            take,
+        });
+
+        return tasks.map((task) => this.toDomain(task));
     }
 
     async delete(id: string): Promise<void> {
