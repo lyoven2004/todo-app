@@ -124,7 +124,10 @@ export class PrismaTaskRepository implements ITaskRepository {
 
     async update(id: string, userId: string, data: TUpdateTaskInput): Promise<TTask> {
         const task = await this.prisma.task.updateMany({
-            where: { id },
+            where: {
+                id,
+                userId
+            },
             data,
         });
 
