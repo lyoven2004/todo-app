@@ -37,5 +37,5 @@ export interface ITaskRepository {
   findByIdAndUserId(id: string, userId: string): Promise<TTask | null>;
   findAllByUserId(userId: string, query: TQueryTask): Promise<TPaginationResult<TTask>>;
   delete(id: string): Promise<void>;
-  update(id: string, data: TUpdateTaskInput): Promise<TTask>;
+  update(id: string, userId: string, data: TUpdateTaskInput): Promise<TTask>;
 }

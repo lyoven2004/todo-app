@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import {
     Task as PrismaTask,
     TaskStatus as PrismaTaskStatus,
@@ -122,20 +122,21 @@ export class PrismaTaskRepository implements ITaskRepository {
         });
     }
 
-    async update(id: string, data: TUpdateTaskInput): Promise<TTask> {
-        const task = await this.prisma.task.update({
+    async update(id: string, userId: string, data: TUpdateTaskInput): Promise<TTask> {
+        const task = await this.prisma.task.updateMany({
             where: { id },
-            data: {
-                ...(data.title !== undefined && { title: data.title }),
-                ...(data.description !== undefined && { description: data.description }),
-                ...(data.status !== undefined && { status: data.status }),
-                ...(data.priority !== undefined && { priority: data.priority }),
-                ...(data.categoryId !== undefined && { categoryId: data.categoryId }),
-                ...(data.expiredAt !== undefined && { expiredAt: data.expiredAt }),
-            },
+            data,
         });
 
-        return this.toDomain(task);
+        if (task.count === 0) {
+            throw new NotFoundException("Task not found");
+        }
+
+        const updated = await this.prisma.task.findUnique({
+            where: { id },
+        });
+
+        return this.toDomain(updated!);
     }
 
 }
