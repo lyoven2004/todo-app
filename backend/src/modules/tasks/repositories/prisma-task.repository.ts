@@ -6,8 +6,9 @@ import {
     Prisma,
 } from '@prisma/client';
 import { PrismaService } from "prisma/prisma.service";
-import { ITaskRepository, TCreateTaskInput } from "./task.repository";
+import { ITaskRepository, TCreateTaskInput, TQueryTask } from "./task.repository";
 import { TaskPriority, TaskStatus, TTask } from "../entities/task.entity";
+import { TPaginationResult } from "src/common/types/pagination.type";
 
 @Injectable()
 export class PrismaTaskRepository implements ITaskRepository {
@@ -64,10 +65,55 @@ export class PrismaTaskRepository implements ITaskRepository {
                 userId,
             },
         });
-        
+
         if (!task) return null;
 
         return this.toDomain(task)
+    }
+
+    async findAllByUserId(userId: string, query: TQueryTask): Promise<TPaginationResult<TTask>> {
+        const {
+            status,
+            priority,
+            categoryId,
+            sortBy = 'createdAt',
+            sortOrder = 'desc',
+            page = 1,
+            limit = 10,
+        } = query;
+
+        const skip = (page - 1) * limit;
+
+        const [tasks, total] = await Promise.all([
+            this.prisma.task.findMany({
+                where: {
+                    userId,
+                    status,
+                    priority,
+                    categoryId,
+                },
+                orderBy: {
+                    [sortBy]: sortOrder,
+                },
+                skip,
+                take: limit,
+            }),
+
+            this.prisma.task.count({
+                where: {
+                    userId,
+                    status,
+                    priority,
+                    categoryId,
+                },
+            }),
+        ]);
+
+        return {
+            page,
+            totalPage: Math.ceil(total / limit),
+            data: tasks.map((task) => this.toDomain(task)),
+        };
     }
 
     async delete(id: string): Promise<void> {

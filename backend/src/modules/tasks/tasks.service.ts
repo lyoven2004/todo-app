@@ -6,6 +6,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskPriority, TaskStatus, TTask } from './entities/task.entity';
 import { TASK_REPOSITORY } from './repositories/task-token';
 import type { ITaskRepository, TCreateTaskInput } from './repositories/task.repository';
+import { QueryTasksDto } from './dto/query-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -42,9 +43,8 @@ export class TasksService {
     return this.taskRepository.create(userId, data);
   }
 
-
-  findAll() {
-    return `This action returns all tasks`;
+  async findAll(userId: string, query: QueryTasksDto) {
+    return this.taskRepository.findAllByUserId(userId, query);
   }
 
   async findOne(id: string, userId: string): Promise<TTask> {
