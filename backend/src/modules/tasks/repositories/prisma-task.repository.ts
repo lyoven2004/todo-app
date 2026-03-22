@@ -6,8 +6,9 @@ import {
     Prisma,
 } from '@prisma/client';
 import { PrismaService } from "prisma/prisma.service";
-import { ITaskRepository, TCreateTaskInput, TPaginationTaskResult, TQueryTask } from "./task.repository";
+import { ITaskRepository, TCreateTaskInput, TQueryTask } from "./task.repository";
 import { TaskPriority, TaskStatus, TTask } from "../entities/task.entity";
+import { TPaginationResult } from "src/common/types/pagination.type";
 
 @Injectable()
 export class PrismaTaskRepository implements ITaskRepository {
@@ -70,7 +71,7 @@ export class PrismaTaskRepository implements ITaskRepository {
         return this.toDomain(task)
     }
 
-    async findAllByUserId(userId: string, query: TQueryTask): Promise<TPaginationTaskResult<TTask>> {
+    async findAllByUserId(userId: string, query: TQueryTask): Promise<TPaginationResult<TTask>> {
         const {
             status,
             priority,

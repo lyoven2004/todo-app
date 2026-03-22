@@ -44,15 +44,7 @@ export class TasksService {
   }
 
   async findAll(userId: string, query: QueryTasksDto) {
-    return this.taskRepository.findAllByUserId(userId, {
-      status: query.status,
-      priority: query.priority,
-      categoryId: query.categoryId,
-      sortBy: query.sortBy,
-      sortOrder: query.sortOrder,
-      page: query.page,
-      limit: query.limit,
-    });
+    return this.taskRepository.findAllByUserId(userId, query);
   }
 
   async findOne(id: string, userId: string): Promise<TTask> {
