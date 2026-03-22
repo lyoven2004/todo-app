@@ -44,26 +44,14 @@ export class TasksService {
   }
 
   async findAll(userId: string, query: QueryTasksDto) {
-    const {
-      status,
-      priority,
-      categoryId,
-      sortBy = 'createdAt',
-      sortOrder = 'desc',
-      page = 1,
-      limit = 10,
-    } = query;
-
-    const skip = (page - 1) * limit;
-
     return this.taskRepository.findAllByUserId(userId, {
-      status,
-      priority,
-      categoryId,
-      sortBy,
-      sortOrder,
-      skip,
-      take: limit,
+      status: query.status,
+      priority: query.priority,
+      categoryId: query.categoryId,
+      sortBy: query.sortBy,
+      sortOrder: query.sortOrder,
+      page: query.page,
+      limit: query.limit,
     });
   }
 

@@ -6,7 +6,7 @@ import {
     Prisma,
 } from '@prisma/client';
 import { PrismaService } from "prisma/prisma.service";
-import { ITaskRepository, TCreateTaskInput, TQueryTask } from "./task.repository";
+import { ITaskRepository, TCreateTaskInput, TPaginationTaskResult, TQueryTask } from "./task.repository";
 import { TaskPriority, TaskStatus, TTask } from "../entities/task.entity";
 
 @Injectable()
@@ -70,32 +70,49 @@ export class PrismaTaskRepository implements ITaskRepository {
         return this.toDomain(task)
     }
 
-    async findAllByUserId(userId: string, query: TQueryTask): Promise<TTask[]> {
+    async findAllByUserId(userId: string, query: TQueryTask): Promise<TPaginationTaskResult<TTask>> {
         const {
             status,
             priority,
             categoryId,
             sortBy = 'createdAt',
             sortOrder = 'desc',
-            skip = 0,
-            take = 10,
+            page = 1,
+            limit = 10,
         } = query;
 
-        const tasks = await this.prisma.task.findMany({
-            where: {
-                userId,
-                ...(status && { status }),
-                ...(priority && { priority }),
-                ...(categoryId && { categoryId }),
-            },
-            orderBy: {
-                [sortBy]: sortOrder,
-            },
-            skip,
-            take,
-        });
+        const skip = (page - 1) * limit;
 
-        return tasks.map((task) => this.toDomain(task));
+        const [tasks, total] = await Promise.all([
+            this.prisma.task.findMany({
+                where: {
+                    userId,
+                    status,
+                    priority,
+                    categoryId,
+                },
+                orderBy: {
+                    [sortBy]: sortOrder,
+                },
+                skip,
+                take: limit,
+            }),
+
+            this.prisma.task.count({
+                where: {
+                    userId,
+                    status,
+                    priority,
+                    categoryId,
+                },
+            }),
+        ]);
+
+        return {
+            page,
+            totalPage: Math.ceil(total / limit),
+            data: tasks.map((task) => this.toDomain(task)),
+        };
     }
 
     async delete(id: string): Promise<void> {

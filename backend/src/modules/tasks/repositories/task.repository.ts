@@ -17,8 +17,14 @@ export type TQueryTask = {
   sortBy?: 'createdAt' | 'expiredAt';
   sortOrder?: 'asc' | 'desc';
 
-  skip?: number;
-  take?: number;
+  page?: number;
+  limit?: number;
+};
+
+export type TPaginationTaskResult<T> = {
+  page: number;
+  totalPage: number;
+  data: T[];
 };
 
 export interface ITaskRepository {
@@ -26,6 +32,6 @@ export interface ITaskRepository {
   findById(id: string): Promise<TTask | null>;
   findByUserId(userId: string): Promise<TTask[]>;
   findByIdAndUserId(id: string, userId: string): Promise<TTask | null>;
-  findAllByUserId(userId: string, query: TQueryTask): Promise<TTask[]>;
+  findAllByUserId(userId: string, query: TQueryTask): Promise<TPaginationTaskResult<TTask>>;
   delete(id: string): Promise<void>;
 }
