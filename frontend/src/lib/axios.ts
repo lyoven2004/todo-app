@@ -1,23 +1,23 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 
 export class ApiError extends Error {
-  status?: number;
-  code?: string;
-  field?: string;
+  status?: number
+  code?: string
+  field?: string
 
   constructor(
     message: string,
     options?: {
-      status?: number;
-      code?: string;
-      field?: string;
+      status?: number
+      code?: string
+      field?: string
     },
   ) {
-    super(message);
-    this.name = "ApiError";
-    this.status = options?.status;
-    this.code = options?.code;
-    this.field = options?.field;
+    super(message)
+    this.name = "ApiError"
+    this.status = options?.status
+    this.code = options?.code
+    this.field = options?.field
   }
 }
 
