@@ -1,5 +1,4 @@
-import axios from "axios";
-import { clearSessionTokens, getAccessToken } from "./session";
+import axios, { AxiosError, AxiosInstance } from "axios";
 
 export class ApiError extends Error {
   status?: number;
@@ -22,39 +21,31 @@ export class ApiError extends Error {
   }
 }
 
-export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true,
-});
+function createApiClient(): AxiosInstance {
+  const instance = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    withCredentials: true,
+  })
 
-// Request interceptor: auto attach access token
-api.interceptors.request.use((config) => {
-  const token = getAccessToken();
+  instance.interceptors.response.use(
+    (response) => response,
+    (error: AxiosError<any>) => {
+      const res = error.response
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+      return Promise.reject(
+        new ApiError(res?.data?.message || error.message || "Something went wrong", {
+          status: res?.status,
+          code: res?.data?.code,
+          field: res?.data?.field,
+        }),
+      )
+    },
+  )
 
-  return config;
-});
+  return instance
+}
 
-// Response interceptor: normalize error
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const res = error.response;
-
-    if (res?.status === 401) {
-      clearSessionTokens();
-    }
-
-    throw new ApiError(res?.data?.message || "Something went wrong", {
-      status: res?.status,
-      code: res?.data?.code,
-      field: res?.data?.field,
-    });
-  },
-);
+export const api = createApiClient()

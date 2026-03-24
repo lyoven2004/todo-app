@@ -23,13 +23,6 @@ export const loginResponseSchema = z.object({
 })
 export type TLoginResponseDto = z.infer<typeof loginResponseSchema>
 
-// AUTH SUCCESS RESPONSE (COMBINED)
-export type TAuthSuccessResponse = {
-  accessToken: string
-  refreshToken: string
-}
-
-// AUTH ERROR TYPE
 export type TAuthApiError = {
   message: string
   code?: string

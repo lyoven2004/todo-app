@@ -16,8 +16,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { TLoginFormValues, loginSchema } from "../_config/login.schema";
-import { getAuthErrorMessage, useLogin } from "../_hooks/use-login";
+import { TLoginFormValues, TLoginRequestDto, TLoginResponseDto, loginSchema } from "../_config/login.schema";
+import { useMutation } from "@tanstack/react-query";
+import { loginUser } from "@/axios/auth-api";
+import { setAuthCookies } from "@/lib/auth-cookie";
+import { ApiError } from "@/lib/axios";
+import { getAuthErrorMessage } from "@/utils/get-error-message";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -31,8 +35,14 @@ export function LoginForm() {
     mode: 'onChange'
   });
 
-  const { mutate: login, isPending } = useLogin({
-    onSuccess: () => {
+  const { mutate: login, isPending } = useMutation<TLoginResponseDto, ApiError, TLoginRequestDto>({
+    mutationFn: loginUser,
+    onSuccess: (data) => {
+      setAuthCookies({
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+      });
+
       toast.success(`Sign in successfully`, {
         description: "Welcome back!",
       });
@@ -42,7 +52,6 @@ export function LoginForm() {
         description: getAuthErrorMessage(error.code),
       });
     },
-    redirectTo: "/",
   });
 
   const onSubmit = (values: TLoginFormValues) => {

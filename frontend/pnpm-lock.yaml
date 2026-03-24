@@ -23,9 +23,6 @@ importers:
       axios:
         specifier: ^1.13.6
         version: 1.13.6
-      axois:
-        specifier: 0.0.1-security
-        version: 0.0.1-security
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -1797,9 +1794,6 @@ packages:
   axobject-query@4.1.0:
     resolution: {integrity: sha512-qIj0G9wZbMGNLjLmg1PT6v2mE9AH2zlnADJD/2tC6E00hgmhUOfEB6greHPAfLRSufHqROIUTkw6E+M3lH0PTQ==}
     engines: {node: '>= 0.4'}
-
-  axois@0.0.1-security:
-    resolution: {integrity: sha512-8Nui4fwwyxHfjAfpDlg3Jt66EJA4i1D1eJch3D+wM/Oe+qhpyp7yfiszko/O5/adYu20wc37RG9/Eg8QIJHcvA==}
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -5571,8 +5565,6 @@ snapshots:
       - debug
 
   axobject-query@4.1.0: {}
-
-  axois@0.0.1-security: {}
 
   balanced-match@1.0.2: {}
 
