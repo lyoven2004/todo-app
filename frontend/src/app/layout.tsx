@@ -16,23 +16,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Kanban - Minimal Task Management",
   description: "A simple15231  and efficient Kanban board to manage your tasks, track progress, and boost productivity.",
-  icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
-  },
 };
 
 export const viewport = {
