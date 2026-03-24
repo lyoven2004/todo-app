@@ -3,18 +3,12 @@ import type {
   TAuthSuccessResponse,
   TLoginRequestDto,
   TLoginResponseDto,
-} from "@/app/login/_config/auth.schema";
+} from "@/app/login/_config/login.schema";
 import { TApiResponse } from "@/types/api.response";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-type TBackendLoginData = TLoginResponseDto & {
-  user?: {
-    id: string;
-    email: string;
-    name?: string;
-  };
-};
+type TBackendLoginData = TLoginResponseDto;
 
 export async function loginUser(
   payload: TLoginRequestDto,

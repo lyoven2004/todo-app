@@ -6,7 +6,6 @@ import { LoginForm } from "./_components/login-form";
 
 export default function LoginPage() {
 
-
     return (
         <main className="min-h-screen bg-[#f8fafc] flex flex-col">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">

@@ -2,13 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import { loginUser } from "../auth-api";
+import { loginUser } from "../../../axios/auth-api";
 import type {
   TAuthApiError,
   TAuthSuccessResponse,
   TLoginFormValues,
   TLoginRequestDto,
-} from "@/app/login/_config/auth.schema";
+} from "@/app/login/_config/login.schema";
 import { ApiError } from "@/lib/axios";
 import { setSessionTokens } from "@/lib/session";
 

@@ -16,38 +16,38 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { TLoginFormValues, loginSchema } from "../_config/auth.schema";
-import { getAuthErrorMessage, useLogin } from "../_hooks/use-auth";
+import { TLoginFormValues, loginSchema } from "../_config/login.schema";
+import { getAuthErrorMessage, useLogin } from "../_hooks/use-login";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
-      const form = useForm<TLoginFormValues>({
-        resolver: zodResolver(loginSchema),
-        defaultValues: {
-            email: "",
-            password: "",
-        },
-        mode:'onChange'
-    });
+  const form = useForm<TLoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    mode: 'onChange'
+  });
 
-    const { mutate: login, isPending } = useLogin({
-        onSuccess: () => {
-            toast.success(`Sign in successfully`, {
-                description: "Welcome back!",
-            });
-        },
-        onError: (error) => {
-            toast.error("Sign in failed", {
-                description: getAuthErrorMessage(error.code),
-            });
-        },
-        redirectTo: "/",
-    });
+  const { mutate: login, isPending } = useLogin({
+    onSuccess: () => {
+      toast.success(`Sign in successfully`, {
+        description: "Welcome back!",
+      });
+    },
+    onError: (error) => {
+      toast.error("Sign in failed", {
+        description: getAuthErrorMessage(error.code),
+      });
+    },
+    redirectTo: "/",
+  });
 
-    const onSubmit = (values: TLoginFormValues) => {
-        login(values);
-    };
+  const onSubmit = (values: TLoginFormValues) => {
+    login(values);
+  };
 
   return (
     <Form {...form}>
