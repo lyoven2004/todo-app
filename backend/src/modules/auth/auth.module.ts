@@ -7,9 +7,13 @@ import { PrismaRefreshRepository } from './repositories/prisma-refresh-token.rep
 import { JwtModule } from '@nestjs/jwt';
 import { REFRESH_TOKEN_REPOSITORY } from './repositories/refresh-token';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [UsersModule, ConfigModule,
+  imports: [
+    UsersModule, 
+    ConfigModule,
+    PassportModule,
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET,
     }),
