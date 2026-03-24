@@ -20,11 +20,14 @@ import { toast } from "sonner"
 import {
   registerSchema,
   TRegisterFormValues,
+  TRegisterRequestDto,
+  TRegisterResponseDto,
 } from "../_config/register.schema"
-import {
-  getRegisterErrorMessage,
-  useRegister,
-} from "../_hooks/use-register"
+import { useMutation } from "@tanstack/react-query"
+import { ApiError } from "@/lib/axios"
+import { registerUser } from "@/axios/auth-api"
+import { useRouter } from "next/navigation"
+import { getRegisterErrorMessage } from "@/utils/get-error-message"
 
 export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -41,18 +44,21 @@ export function RegisterForm() {
     mode: "onChange",
   })
 
-  const { mutate: register, isPending } = useRegister({
+  const router = useRouter()
+
+  const { mutate: register, isPending } = useMutation<TRegisterResponseDto, ApiError, TRegisterRequestDto>({
+    mutationFn: registerUser,
     onSuccess: (data) => {
       toast.success(data.message || "Account created successfully", {
         description: "Please sign in to continue.",
       })
+      router.push("/login")
     },
     onError: (error) => {
       toast.error("Sign up failed", {
         description: getRegisterErrorMessage(error.code),
       })
     },
-    redirectTo: "/login",
   })
 
   const handleSubmit = (values: TRegisterFormValues) => {
