@@ -2,13 +2,8 @@ import type {
   TLoginRequestDto,
   TLoginResponseDto,
 } from "@/app/login/_config/login.schema";
-import { TApiResponse } from "@/types/api.response";
 import { TRegisterRequestDto, TRegisterResponseDto } from "@/app/register/_config/register.schema";
 import { api } from "@/lib/axios";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-type TBackendLoginData = TLoginResponseDto;
 
 export async function loginUser(
   payload: TLoginRequestDto,
