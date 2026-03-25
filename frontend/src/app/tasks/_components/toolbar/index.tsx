@@ -15,10 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-
-export type TTaskStatus = "NOT_STARTED" | "IN_PROGRESS" | "DONE" | "FAILED"
-export type TTaskPriority = "HIGH" | "MEDIUM" | "LOW"
-export type TTaskSortBy = "newest" | "oldest" | "dueDate" | "priority"
+import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task.type"
+import { PRIORITY_OPTIONS, SORT_OPTIONS, STATUS_OPTIONS } from "@/constants/task.constant"
 
 export type TToolbarCategory = {
     id: string
@@ -45,30 +43,6 @@ type TToolbarProps = {
 
     onAddTask: () => void
 }
-
-const STATUS_OPTIONS: Array<{ label: string; value: TTaskStatus }> = [
-    { label: "Not Started", value: "NOT_STARTED" },
-    { label: "In Progress", value: "IN_PROGRESS" },
-    { label: "Done", value: "DONE" },
-    { label: "Failed", value: "FAILED" },
-]
-
-const PRIORITY_OPTIONS: Array<{
-    label: string
-    value: TTaskPriority
-    dotClassName: string
-}> = [
-        { label: "High", value: "HIGH", dotClassName: "bg-destructive" },
-        { label: "Medium", value: "MEDIUM", dotClassName: "bg-priority-medium" },
-        { label: "Low", value: "LOW", dotClassName: "bg-muted-foreground/40" },
-    ]
-
-const SORT_OPTIONS: Array<{ label: string; value: TTaskSortBy }> = [
-    { label: "Newest First", value: "newest" },
-    { label: "Oldest First", value: "oldest" },
-    { label: "Due Date", value: "dueDate" },
-    { label: "Priority", value: "priority" },
-]
 
 function getCategoryDotClass(color?: string) {
     switch (color) {
