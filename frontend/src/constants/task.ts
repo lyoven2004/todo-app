@@ -1,4 +1,3 @@
-"use client"
 import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task";
 import { CheckCircle2, Circle, Loader2, LucideIcon, XCircle } from "lucide-react";
 
