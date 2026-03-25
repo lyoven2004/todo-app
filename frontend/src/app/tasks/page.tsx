@@ -1,11 +1,27 @@
-import { LayoutGrid } from "lucide-react"
+"use client"
+
+import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task"
+import { LayoutGrid, Loader2 } from "lucide-react"
+import { useState } from "react"
+import { Toolbar } from "./_components/toolbar"
 
 
 export default function TaskPage() {
 
+    const [searchQuery, setSearchQuery] = useState("")
+    const [statusFilter, setStatusFilter] = useState<TTaskStatus | null>(null)
+    const [priorityFilter, setPriorityFilter] = useState<TTaskPriority | null>(null)
+    const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
+    const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+    const mockCategories = [
+        { id: "1", name: "Work", color: "blue" },
+        { id: "2", name: "Personal", color: "green" },
+    ]
+
     return (
-        <main className="min-h-screen bg-page">
-            <header className="sticky top-0 z-40 border-b border-surface bg-surface/80 backdrop-blur-xl">
+        <main className="min-h-screen bg-primary">
+            <header className="sticky top-0 z-40 border-b border-muted bg-secondary/80 backdrop-blur-xl">
                 <div className="app-container">
                     <div className="flex h-16 items-center">
                         <div className="flex items-center gap-3">
@@ -36,21 +52,34 @@ export default function TaskPage() {
                 </section>
 
                 <section className="mb-6">
-                    <div className="rounded-2xl border border-surface bg-surface p-4 shadow-sm">
-                        <p className="text-sm text-muted-foreground">
-                            Toolbar area placeholder
-                        </p>
+                    <div className="rounded-2xl border border-muted bg-secondary p-4 shadow-sm">
+                        <Toolbar
+                            searchQuery={searchQuery}
+                            onSearchChange={setSearchQuery}
+                            statusFilter={statusFilter}
+                            onStatusFilterChange={setStatusFilter}
+                            priorityFilter={priorityFilter}
+                            onPriorityFilterChange={setPriorityFilter}
+                            categoryFilter={categoryFilter}
+                            onCategoryFilterChange={setCategoryFilter}
+                            categories={mockCategories}
+                            sortBy={sortBy}
+                            onSortChange={setSortBy}
+                            onAddTask={() => setIsCreateDialogOpen(true)}
+                        />
                     </div>
                 </section>
 
                 <section>
-                    <div className="min-h-[500px] rounded-2xl border border-surface bg-surface p-6 shadow-sm">
+                    <div className="min-h-[500px] rounded-2xl border border-muted bg-secondary p-6 shadow-sm">
                         <p className="text-sm text-muted-foreground">
                             Task board area placeholder
                         </p>
                     </div>
                 </section>
             </div>
+
+
         </main>
     )
 }
