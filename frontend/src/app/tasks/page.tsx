@@ -4,6 +4,8 @@ import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task"
 import { LayoutGrid, Loader2 } from "lucide-react"
 import { useState } from "react"
 import { Toolbar } from "./_components/toolbar"
+import { TaskBoard } from "./_components/task-board"
+import { TASK_STATUS_LABEL, TASK_STATUSES } from "@/constants/task.constant"
 
 
 export default function TaskPage() {
@@ -52,31 +54,42 @@ export default function TaskPage() {
                 </section>
 
                 <section className="mb-6">
-                    <div className="rounded-2xl border border-muted bg-secondary p-4 shadow-sm">
-                        <Toolbar
-                            searchQuery={searchQuery}
-                            onSearchChange={setSearchQuery}
-                            statusFilter={statusFilter}
-                            onStatusFilterChange={setStatusFilter}
-                            priorityFilter={priorityFilter}
-                            onPriorityFilterChange={setPriorityFilter}
-                            categoryFilter={categoryFilter}
-                            onCategoryFilterChange={setCategoryFilter}
-                            categories={mockCategories}
-                            sortBy={sortBy}
-                            onSortChange={setSortBy}
-                            onAddTask={() => setIsCreateDialogOpen(true)}
-                        />
-                    </div>
+                    <Toolbar
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        statusFilter={statusFilter}
+                        onStatusFilterChange={setStatusFilter}
+                        priorityFilter={priorityFilter}
+                        onPriorityFilterChange={setPriorityFilter}
+                        categoryFilter={categoryFilter}
+                        onCategoryFilterChange={setCategoryFilter}
+                        categories={mockCategories}
+                        sortBy={sortBy}
+                        onSortChange={setSortBy}
+                        onAddTask={() => setIsCreateDialogOpen(true)}
+                    />
                 </section>
 
-                <section>
-                    <div className="min-h-[500px] rounded-2xl border border-muted bg-secondary p-6 shadow-sm">
-                        <p className="text-sm text-muted-foreground">
-                            Task board area placeholder
-                        </p>
-                    </div>
-                </section>
+                <TaskBoard statuses={TASK_STATUSES}>
+                    {TASK_STATUSES.map((status) => (
+                        <div
+                            key={status}
+                            className="flex min-h-[520px] min-w-0 flex-col rounded-2xl border border-muted bg-primary p-4 flex flex-col"                        >
+                            <div className="mb-4 flex items-center justify-between gap-3">
+                                <h3 className="truncate text-sm font-semibold text-foreground">
+                                    {TASK_STATUS_LABEL[status]}
+                                </h3>
+                                <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-muted px-2 text-xs text-muted-foreground">
+                                    0
+                                </span>
+                            </div>
+
+                            <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-surface">
+                                <p className="text-sm text-muted-foreground">No tasks yet</p>
+                            </div>
+                        </div>
+                    ))}
+                </TaskBoard>
             </div>
 
 

@@ -1,11 +1,22 @@
 import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task";
 
-export const STATUS_OPTIONS: Array<{ label: string; value: TTaskStatus }> = [
+export const TASK_STATUS_OPTIONS: Array<{ label: string; value: TTaskStatus }> = [
     { label: "Not Started", value: "NOT_STARTED" },
     { label: "In Progress", value: "IN_PROGRESS" },
     { label: "Done", value: "DONE" },
     { label: "Failed", value: "FAILED" },
 ]
+
+export const TASK_STATUSES: TTaskStatus[] = TASK_STATUS_OPTIONS.map(
+  (option) => option.value
+)
+
+export const TASK_STATUS_LABEL: Record<TTaskStatus, string> = {
+    NOT_STARTED: "Not Started",
+    IN_PROGRESS: "In Progress",
+    DONE: "Done",
+    FAILED: "Failed",
+}
 
 export const PRIORITY_OPTIONS: Array<{
     label: string
