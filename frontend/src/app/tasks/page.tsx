@@ -49,9 +49,6 @@ export default function TaskPage() {
                 </div>
             </header>
 
-            <button onClick={() => setPage(prev => prev + 1)}>
-                page2
-            </button>
             <div className="app-container py-10">
                 <section className="mb-8">
                     <h2 className="text-3xl font-semibold tracking-tight text-foreground">
