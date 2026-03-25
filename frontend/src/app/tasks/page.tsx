@@ -1,6 +1,6 @@
 "use client"
 
-import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task.type"
+import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task"
 import { LayoutGrid, Loader2 } from "lucide-react"
 import { useState } from "react"
 import { Toolbar } from "./_components/toolbar"

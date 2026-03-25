@@ -1,4 +1,4 @@
-import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task.type";
+import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task";
 
 export const STATUS_OPTIONS: Array<{ label: string; value: TTaskStatus }> = [
     { label: "Not Started", value: "NOT_STARTED" },
