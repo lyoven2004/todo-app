@@ -3,10 +3,9 @@
 import { cn } from "@/lib/utils"
 import { TTaskStatus } from "@/types/task"
 
-
 type TTaskBoardProps = {
   statuses: TTaskStatus[]
-  children?: React.ReactNode
+  children: React.ReactNode
   className?: string
 }
 

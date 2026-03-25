@@ -4,9 +4,10 @@ import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task"
 import { LayoutGrid } from "lucide-react"
 import { useState } from "react"
 import { Toolbar } from "./_components/toolbar"
-import { TaskBoard } from "./_components/task-board"
+import { TaskBoard } from "./_components/task-holder/task-board"
 import { TASK_STATUS_OPTIONS } from "@/constants/task"
-import { TaskColumn } from "./_components/task-board/task-column"
+import { TaskCard } from "./_components/task-holder/task-card"
+import { TaskColumn } from "./_components/task-holder/task-column"
 
 
 export default function TaskPage() {
@@ -20,6 +21,26 @@ export default function TaskPage() {
     const mockCategories = [
         { id: "1", name: "Work", color: "blue" },
         { id: "2", name: "Personal", color: "green" },
+    ]
+    const mockTasks = [
+        {
+            id: "1",
+            title: "Prepare project brief",
+            description: "Draft the task requirements for the team.",
+            dueDate: "2026-03-30",
+            priority: "HIGH" as const,
+            categoryId: "1",
+            status: "NOT_STARTED" as const,
+        },
+        {
+            id: "2",
+            title: "Review API schema",
+            description: "Confirm response shape before integration.",
+            dueDate: "2026-04-02",
+            priority: "MEDIUM" as const,
+            categoryId: "1",
+            status: "IN_PROGRESS" as const,
+        },
     ]
 
     return (
@@ -72,14 +93,27 @@ export default function TaskPage() {
                 </section>
 
                 <TaskBoard statuses={TASK_STATUS_OPTIONS.map(o => o.value)}>
-                    {TASK_STATUS_OPTIONS.map((option) => (
+                    {TASK_STATUS_OPTIONS.map(({ value, label }) => (
                         <TaskColumn
-                            key={option.value}
-                            status={option.value}
-                            title={option.label}
+                            key={value}
+                            status={value}
+                            title={label}
                             count={0}
-                            onAddTask={option.value === "NOT_STARTED" ? () => { } : undefined}
-                        />
+                            onAddTask={value === "NOT_STARTED" ? () => { } : undefined}
+                        >
+                            {mockTasks
+                                .filter((task) => task.status === value)
+                                .map((task) => (
+                                    <TaskCard
+                                        key={task.id}
+                                        task={task}
+                                        categories={mockCategories}
+                                        onEdit={(task) => console.log("edit", task)}
+                                        onDelete={(id) => console.log("delete", id)}
+                                        onDuplicate={(task) => console.log("duplicate", task)}
+                                    />
+                                ))}
+                        </TaskColumn>
                     ))}
                 </TaskBoard>
             </div>
