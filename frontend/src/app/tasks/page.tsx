@@ -1,11 +1,12 @@
 "use client"
 
 import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task"
-import { LayoutGrid, Loader2 } from "lucide-react"
+import { LayoutGrid } from "lucide-react"
 import { useState } from "react"
 import { Toolbar } from "./_components/toolbar"
 import { TaskBoard } from "./_components/task-board"
-import { TASK_STATUS_LABEL, TASK_STATUSES } from "@/constants/task.constant"
+import { TASK_STATUS_OPTIONS } from "@/constants/task"
+import { TaskColumn } from "./_components/task-board/task-column"
 
 
 export default function TaskPage() {
@@ -70,24 +71,15 @@ export default function TaskPage() {
                     />
                 </section>
 
-                <TaskBoard statuses={TASK_STATUSES}>
-                    {TASK_STATUSES.map((status) => (
-                        <div
-                            key={status}
-                            className="flex min-h-[520px] min-w-0 flex-col rounded-2xl border border-muted bg-primary p-4 flex flex-col"                        >
-                            <div className="mb-4 flex items-center justify-between gap-3">
-                                <h3 className="truncate text-sm font-semibold text-foreground">
-                                    {TASK_STATUS_LABEL[status]}
-                                </h3>
-                                <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-muted px-2 text-xs text-muted-foreground">
-                                    0
-                                </span>
-                            </div>
-
-                            <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-surface">
-                                <p className="text-sm text-muted-foreground">No tasks yet</p>
-                            </div>
-                        </div>
+                <TaskBoard statuses={TASK_STATUS_OPTIONS.map(o => o.value)}>
+                    {TASK_STATUS_OPTIONS.map((option) => (
+                        <TaskColumn
+                            key={option.value}
+                            status={option.value}
+                            title={option.label}
+                            count={0}
+                            onAddTask={option.value === "NOT_STARTED" ? () => { } : undefined}
+                        />
                     ))}
                 </TaskBoard>
             </div>
