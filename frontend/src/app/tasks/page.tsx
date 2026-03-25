@@ -92,30 +92,14 @@ export default function TaskPage() {
                     />
                 </section>
 
-                <TaskBoard statuses={TASK_STATUS_OPTIONS.map(o => o.value)}>
-                    {TASK_STATUS_OPTIONS.map(({ value, label }) => (
-                        <TaskColumn
-                            key={value}
-                            status={value}
-                            title={label}
-                            count={0}
-                            onAddTask={value === "NOT_STARTED" ? () => { } : undefined}
-                        >
-                            {mockTasks
-                                .filter((task) => task.status === value)
-                                .map((task) => (
-                                    <TaskCard
-                                        key={task.id}
-                                        task={task}
-                                        categories={mockCategories}
-                                        onEdit={(task) => console.log("edit", task)}
-                                        onDelete={(id) => console.log("delete", id)}
-                                        onDuplicate={(task) => console.log("duplicate", task)}
-                                    />
-                                ))}
-                        </TaskColumn>
-                    ))}
-                </TaskBoard>
+                <TaskBoard
+                    tasks={mockTasks}
+                    categories={mockCategories}
+                    onAddTask={(status) => console.log("add task to", status)}
+                    onEditTask={(task) => console.log("edit", task)}
+                    onDeleteTask={(id) => console.log("delete", id)}
+                    onDuplicateTask={(task) => console.log("duplicate", task)}
+                />
             </div>
 
 

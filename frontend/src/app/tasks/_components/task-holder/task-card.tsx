@@ -12,13 +12,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
-import { TTaskCardCategory, TTaskCardData } from "@/types/task"
+import { TTaskCategory, TTaskCardData } from "@/types/task"
 import { PRIORITY_CONFIG } from "@/constants/task"
 import { formatDate } from "@/lib/date"
 
 type TTaskCardProps = {
   task: TTaskCardData
-  categories?: TTaskCardCategory[]
+  categories?: TTaskCategory[]
   onEdit?: (task: TTaskCardData) => void
   onDelete?: (taskId: string) => void
   onDuplicate?: (task: TTaskCardData) => void
@@ -108,49 +108,47 @@ export function TaskCard({
           </DropdownMenu>
         </div>
 
-        {(task.description || category || dueDate) && (
-          <div
-            className="cursor-pointer"
-            onClick={() => onEdit?.(task)}
-          >
-            {task.description && (
-              <p className="mb-3 line-clamp-2 pl-0 text-sm leading-relaxed text-muted-foreground">
-                {task.description}
-              </p>
-            )}
+        <div
+          className="cursor-pointer"
+          onClick={() => onEdit?.(task)}
+        >
+          {task.description && (
+            <p className="mb-3 line-clamp-2 pl-0 text-sm leading-relaxed text-muted-foreground">
+              {task.description}
+            </p>
+          )}
 
-            <div className="flex flex-wrap items-center gap-2 border-t border-border/40 pt-2">
-              {category && (
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    "h-5 border px-2 py-0 text-[10px] font-medium",
-                    getCategoryBadgeClass(category.color)
-                  )}
-                >
-                  {category.name}
-                </Badge>
-              )}
-
-              {dueDate && (
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <CalendarDays className="size-3.5" />
-                  <span>{dueDate}</span>
-                </div>
-              )}
-
+          <div className="flex flex-wrap items-center gap-2 border-t border-border/40 pt-2">
+            {category && (
               <Badge
                 variant="outline"
                 className={cn(
-                  "h-5 px-2 py-0 text-[10px] font-medium",
-                  priorityConfig.badgeClassName
+                  "h-5 border px-2 py-0 text-[10px] font-medium",
+                  getCategoryBadgeClass(category.color)
                 )}
               >
-                {priorityConfig.label}
+                {category.name}
               </Badge>
-            </div>
+            )}
+
+            {dueDate && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <CalendarDays className="size-3.5" />
+                <span>{dueDate}</span>
+              </div>
+            )}
+
+            <Badge
+              variant="outline"
+              className={cn(
+                "h-5 px-2 py-0 text-[10px] font-medium",
+                priorityConfig.badgeClassName
+              )}
+            >
+              {priorityConfig.label}
+            </Badge>
           </div>
-        )}
+        </div>
       </div>
     </div>
   )

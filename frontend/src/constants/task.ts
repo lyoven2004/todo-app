@@ -1,6 +1,6 @@
 "use client"
 import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task";
-import { CheckCircle2, Circle, Loader2, XCircle } from "lucide-react";
+import { CheckCircle2, Circle, Loader2, LucideIcon, XCircle } from "lucide-react";
 
 export const TASK_STATUS_OPTIONS: Array<{ label: string; value: TTaskStatus }> = [
     { label: "Not Started", value: "NOT_STARTED" },
@@ -26,11 +26,11 @@ export const SORT_OPTIONS: Array<{ label: string; value: TTaskSortBy }> = [
     { label: "Priority", value: "priority" },
 ]
 
-export const STATUS_ICONS: Record<TTaskStatus, React.ReactNode> = {
-    NOT_STARTED: <Circle className="size-4" />,
-    IN_PROGRESS: <Loader2 className="size-4" />,
-    DONE: <CheckCircle2 className="size-4" />,
-    FAILED: <XCircle className="size-4" />,
+export const STATUS_ICONS: Record<TTaskStatus, LucideIcon> = {
+    NOT_STARTED: Circle,
+    IN_PROGRESS: Loader2,
+    DONE: CheckCircle2,
+    FAILED: XCircle,
 }
 
 export const STATUS_UI_CONFIG: Record<
@@ -77,29 +77,29 @@ export const STATUS_UI_CONFIG: Record<
 }
 
 export const PRIORITY_CONFIG: Record<
-  TTaskPriority,
-  {
-    label: string
-    barClassName: string
-    badgeClassName: string
-  }
+    TTaskPriority,
+    {
+        label: string
+        barClassName: string
+        badgeClassName: string
+    }
 > = {
-  HIGH: {
-    label: "High",
-    barClassName: "bg-destructive",
-    badgeClassName:
-      "border-destructive/20 bg-destructive/10 text-destructive",
-  },
-  MEDIUM: {
-    label: "Medium",
-    barClassName: "bg-yellow-500",
-    badgeClassName:
-      "border-yellow-500/20 bg-yellow-500/10 text-yellow-700 dark:text-yellow-300",
-  },
-  LOW: {
-    label: "Low",
-    barClassName: "bg-muted-foreground/40",
-    badgeClassName:
-      "border-border bg-muted text-muted-foreground",
-  },
+    HIGH: {
+        label: "High",
+        barClassName: "bg-destructive",
+        badgeClassName:
+            "border-destructive/20 bg-destructive/10 text-destructive",
+    },
+    MEDIUM: {
+        label: "Medium",
+        barClassName: "bg-yellow-500",
+        badgeClassName:
+            "border-yellow-500/20 bg-yellow-500/10 text-yellow-700 dark:text-yellow-300",
+    },
+    LOW: {
+        label: "Low",
+        barClassName: "bg-muted-foreground/40",
+        badgeClassName:
+            "border-border bg-muted text-muted-foreground",
+    },
 }

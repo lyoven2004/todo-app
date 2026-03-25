@@ -1,11 +1,11 @@
+import { format, isValid, parseISO } from "date-fns"
+
 export function formatDate(dateString?: string | null) {
   if (!dateString) return null
 
-  const date = new Date(dateString)
-  if (Number.isNaN(date.getTime())) return null
+  const date = parseISO(dateString)
 
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  })
+  if (!isValid(date)) return null
+
+  return format(date, "MMM d")
 }
