@@ -1,9 +1,13 @@
 "use client"
 
 import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task"
-import { LayoutGrid, Loader2 } from "lucide-react"
+import { LayoutGrid } from "lucide-react"
 import { useState } from "react"
 import { Toolbar } from "./_components/toolbar"
+import { TaskBoard } from "./_components/task-holder/task-board"
+import { TASK_STATUS_OPTIONS } from "@/constants/task"
+import { TaskCard } from "./_components/task-holder/task-card"
+import { TaskColumn } from "./_components/task-holder/task-column"
 
 
 export default function TaskPage() {
@@ -17,6 +21,26 @@ export default function TaskPage() {
     const mockCategories = [
         { id: "1", name: "Work", color: "blue" },
         { id: "2", name: "Personal", color: "green" },
+    ]
+    const mockTasks = [
+        {
+            id: "1",
+            title: "Prepare project brief",
+            description: "Draft the task requirements for the team.",
+            dueDate: "2026-03-30",
+            priority: "HIGH" as const,
+            categoryId: "1",
+            status: "NOT_STARTED" as const,
+        },
+        {
+            id: "2",
+            title: "Review API schema",
+            description: "Confirm response shape before integration.",
+            dueDate: "2026-04-02",
+            priority: "MEDIUM" as const,
+            categoryId: "1",
+            status: "IN_PROGRESS" as const,
+        },
     ]
 
     return (
@@ -52,31 +76,30 @@ export default function TaskPage() {
                 </section>
 
                 <section className="mb-6">
-                    <div className="rounded-2xl border border-muted bg-secondary p-4 shadow-sm">
-                        <Toolbar
-                            searchQuery={searchQuery}
-                            onSearchChange={setSearchQuery}
-                            statusFilter={statusFilter}
-                            onStatusFilterChange={setStatusFilter}
-                            priorityFilter={priorityFilter}
-                            onPriorityFilterChange={setPriorityFilter}
-                            categoryFilter={categoryFilter}
-                            onCategoryFilterChange={setCategoryFilter}
-                            categories={mockCategories}
-                            sortBy={sortBy}
-                            onSortChange={setSortBy}
-                            onAddTask={() => setIsCreateDialogOpen(true)}
-                        />
-                    </div>
+                    <Toolbar
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        statusFilter={statusFilter}
+                        onStatusFilterChange={setStatusFilter}
+                        priorityFilter={priorityFilter}
+                        onPriorityFilterChange={setPriorityFilter}
+                        categoryFilter={categoryFilter}
+                        onCategoryFilterChange={setCategoryFilter}
+                        categories={mockCategories}
+                        sortBy={sortBy}
+                        onSortChange={setSortBy}
+                        onAddTask={() => setIsCreateDialogOpen(true)}
+                    />
                 </section>
 
-                <section>
-                    <div className="min-h-[500px] rounded-2xl border border-muted bg-secondary p-6 shadow-sm">
-                        <p className="text-sm text-muted-foreground">
-                            Task board area placeholder
-                        </p>
-                    </div>
-                </section>
+                <TaskBoard
+                    tasks={mockTasks}
+                    categories={mockCategories}
+                    onAddTask={(status) => console.log("add task to", status)}
+                    onEditTask={(task) => console.log("edit", task)}
+                    onDeleteTask={(id) => console.log("delete", id)}
+                    onDuplicateTask={(task) => console.log("duplicate", task)}
+                />
             </div>
 
 

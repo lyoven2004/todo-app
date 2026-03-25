@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task"
-import { PRIORITY_OPTIONS, SORT_OPTIONS, STATUS_OPTIONS } from "@/constants/task.constant"
+import { PRIORITY_OPTIONS, SORT_OPTIONS, TASK_STATUS_OPTIONS } from "@/constants/task"
 
 export type TToolbarCategory = {
     id: string
@@ -121,7 +121,7 @@ export function Toolbar({
                             All Statuses
                         </DropdownMenuCheckboxItem>
 
-                        {STATUS_OPTIONS.map((option) => (
+                        {TASK_STATUS_OPTIONS.map((option) => (
                             <DropdownMenuCheckboxItem
                                 key={option.value}
                                 checked={statusFilter === option.value}
