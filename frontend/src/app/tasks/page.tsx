@@ -1,7 +1,22 @@
-import { LayoutGrid } from "lucide-react"
+"use client"
+
+import { LayoutGrid, Loader2 } from "lucide-react"
+import { TTaskPriority, TTaskSortBy, TTaskStatus, Toolbar } from "./_components/toolbar"
+import { useState } from "react"
 
 
 export default function TaskPage() {
+
+    const [searchQuery, setSearchQuery] = useState("")
+    const [statusFilter, setStatusFilter] = useState<TTaskStatus | null>(null)
+    const [priorityFilter, setPriorityFilter] = useState<TTaskPriority | null>(null)
+    const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
+    const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+    const mockCategories = [
+        { id: "1", name: "Work", color: "blue" },
+        { id: "2", name: "Personal", color: "green" },
+    ]
 
     return (
         <main className="min-h-screen bg-page">
@@ -42,6 +57,20 @@ export default function TaskPage() {
                         </p>
                     </div>
                 </section>
+                <Toolbar
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    statusFilter={statusFilter}
+                    onStatusFilterChange={setStatusFilter}
+                    priorityFilter={priorityFilter}
+                    onPriorityFilterChange={setPriorityFilter}
+                    categoryFilter={categoryFilter}
+                    onCategoryFilterChange={setCategoryFilter}
+                    categories={mockCategories}
+                    sortBy={sortBy}
+                    onSortChange={setSortBy}
+                    onAddTask={() => setIsCreateDialogOpen(true)}
+                />
 
                 <section>
                     <div className="min-h-[500px] rounded-2xl border border-surface bg-surface p-6 shadow-sm">
@@ -51,6 +80,8 @@ export default function TaskPage() {
                     </div>
                 </section>
             </div>
+
+
         </main>
     )
 }
