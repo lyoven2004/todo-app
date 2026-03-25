@@ -12,16 +12,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
-import { TTaskCategory, TTaskCardData } from "@/types/task"
 import { PRIORITY_CONFIG } from "@/constants/task"
 import { formatDate } from "@/lib/date"
+import { TTaskCategoryDto, TTaskItemDto } from "../../_config/task.schema"
 
 type TTaskCardProps = {
-  task: TTaskCardData
-  categories?: TTaskCategory[]
-  onEdit?: (task: TTaskCardData) => void
+  task: TTaskItemDto
+  categories?: TTaskCategoryDto[]
+  onEdit?: (task: TTaskItemDto) => void
   onDelete?: (taskId: string) => void
-  onDuplicate?: (task: TTaskCardData) => void
+  onDuplicate?: (task: TTaskItemDto) => void
 }
 
 function getCategoryBadgeClass(color?: string) {
@@ -50,7 +50,7 @@ export function TaskCard({
 }: TTaskCardProps) {
   const priorityConfig = PRIORITY_CONFIG[task.priority]
   const category = categories.find((item) => item.id === task.categoryId)
-  const dueDate = formatDate(task.dueDate)
+  const dueDate = formatDate(task.expiredAt)
 
   return (
     <div

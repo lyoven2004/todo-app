@@ -22,6 +22,7 @@ import { loginUser } from "@/axios/auth-api";
 import { setAuthCookies } from "@/lib/auth-cookie";
 import { ApiError } from "@/lib/axios";
 import { getAuthErrorMessage } from "@/utils/get-error-message";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -35,6 +36,8 @@ export function LoginForm() {
     mode: 'onChange'
   });
 
+  const router = useRouter()
+  
   const { mutate: login, isPending } = useMutation<TLoginResponseDto, ApiError, TLoginRequestDto>({
     mutationFn: loginUser,
     onSuccess: (data) => {
@@ -45,8 +48,11 @@ export function LoginForm() {
 
       toast.success(`Sign in successfully`, {
         description: "Welcome back!",
-      });
+      })
+
+      router.push("/tasks")
     },
+
     onError: (error) => {
       toast.error("Sign in failed", {
         description: getAuthErrorMessage(error.code),

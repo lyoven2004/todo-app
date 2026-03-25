@@ -1,13 +1,14 @@
 "use client"
 
-import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task"
 import { LayoutGrid } from "lucide-react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Toolbar } from "./_components/toolbar"
 import { TaskBoard } from "./_components/task-holder/task-board"
-import { TASK_STATUS_OPTIONS } from "@/constants/task"
-import { TaskCard } from "./_components/task-holder/task-card"
-import { TaskColumn } from "./_components/task-holder/task-column"
+import { TTaskPriority, TTaskSortBy, TTaskStatus } from "./_config/task.schema"
+import { toast } from "sonner"
+import { useQuery } from "@tanstack/react-query"
+import { getTaskList } from "@/axios/task-api"
+import { SORT_MAP } from "@/constants/task"
 
 
 export default function TaskPage() {
@@ -18,30 +19,13 @@ export default function TaskPage() {
     const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
     const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+    const [page, setPage] = useState(1)
+
     const mockCategories = [
         { id: "1", name: "Work", color: "blue" },
         { id: "2", name: "Personal", color: "green" },
     ]
-    const mockTasks = [
-        {
-            id: "1",
-            title: "Prepare project brief",
-            description: "Draft the task requirements for the team.",
-            dueDate: "2026-03-30",
-            priority: "HIGH" as const,
-            categoryId: "1",
-            status: "NOT_STARTED" as const,
-        },
-        {
-            id: "2",
-            title: "Review API schema",
-            description: "Confirm response shape before integration.",
-            dueDate: "2026-04-02",
-            priority: "MEDIUM" as const,
-            categoryId: "1",
-            status: "IN_PROGRESS" as const,
-        },
-    ]
+    // const categories = categoryListData ?? []
 
     return (
         <main className="min-h-screen bg-primary">
@@ -65,6 +49,9 @@ export default function TaskPage() {
                 </div>
             </header>
 
+            <button onClick={() => setPage(prev => prev + 1)}>
+                page2
+            </button>
             <div className="app-container py-10">
                 <section className="mb-8">
                     <h2 className="text-3xl font-semibold tracking-tight text-foreground">
@@ -93,15 +80,15 @@ export default function TaskPage() {
                 </section>
 
                 <TaskBoard
-                    tasks={mockTasks}
                     categories={mockCategories}
-                    onAddTask={(status) => console.log("add task to", status)}
+                    onAddTask={(status) => {
+                        toast.message(`Add task to ${status}`)
+                    }}
                     onEditTask={(task) => console.log("edit", task)}
                     onDeleteTask={(id) => console.log("delete", id)}
                     onDuplicateTask={(task) => console.log("duplicate", task)}
                 />
             </div>
-
 
         </main>
     )

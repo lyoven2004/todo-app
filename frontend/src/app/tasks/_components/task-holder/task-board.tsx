@@ -2,20 +2,18 @@
 
 import { TASK_STATUS_OPTIONS } from "@/constants/task"
 import { cn } from "@/lib/utils"
-import { TTaskCardData, TTaskCategory, TTaskStatus } from "@/types/task"
 import { TaskColumn } from "./task-column"
+import { TTaskCategoryDto, TTaskItemDto, TTaskStatus } from "../../_config/task.schema"
 
 type TTaskBoardProps = {
-  tasks: TTaskCardData[]
-  categories: TTaskCategory[]
+  categories: TTaskCategoryDto[]
   onAddTask?: (status: TTaskStatus) => void
-  onEditTask?: (task: TTaskCardData) => void
+  onEditTask?: (task: TTaskItemDto) => void
   onDeleteTask?: (taskId: string) => void
-  onDuplicateTask?: (task: TTaskCardData) => void
+  onDuplicateTask?: (task: TTaskItemDto) => void
 }
 
 export function TaskBoard({
-  tasks,
   categories,
   onAddTask,
   onEditTask,
@@ -28,17 +26,15 @@ export function TaskBoard({
       <div className="rounded-2xl border border-muted bg-secondary p-4 shadow-sm">
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 2xl:grid-cols-4">
           {TASK_STATUS_OPTIONS.map(({ value, label }) => {
-            const tasksByStatus = tasks.filter(
-              (task) => task.status === value
-            )
+
 
             return (
               <TaskColumn
                 key={value}
                 status={value}
                 title={label}
-                count={tasksByStatus.length}
-                tasks={tasksByStatus}
+          
+                
                 categories={categories}
                 onAddTask={
                   onAddTask && value === "NOT_STARTED"
