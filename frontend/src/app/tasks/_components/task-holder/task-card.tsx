@@ -49,7 +49,7 @@ export function TaskCard({
   onDuplicate,
 }: TTaskCardProps) {
   const priorityConfig = PRIORITY_CONFIG[task.priority]
-  const category = categories.find((item) => item.id === task.categoryId)
+  const category = categories.find((data) => data.id === task.categoryId)
   const dueDate = formatDate(task.expiredAt)
 
   return (

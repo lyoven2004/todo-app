@@ -1,15 +1,15 @@
 "use client"
 
+import { getTaskList } from "@/axios/task-api"
 import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { SORT_MAP, STATUS_ICONS, STATUS_UI_CONFIG } from "@/constants/task"
 import { cn } from "@/lib/utils"
-import { Plus } from "lucide-react"
-import { TaskCard } from "./task-card"
-import { TTaskCategoryDto, TTaskItemDto, TTaskPriority, TTaskSortBy, TTaskStatus } from "../../_config/task.schema"
-import { UIEventHandler, useMemo, useState } from "react"
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { getTaskList } from "@/axios/task-api"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Plus } from "lucide-react"
+import { useCallback, useMemo, useState } from "react"
+import { TTaskCategoryDto, TTaskItemDto, TTaskPriority, TTaskSortBy, TTaskStatus } from "../../_config/task.schema"
+import { TaskCard } from "./task-card"
 
 type TTaskColumnProps = {
   status: TTaskStatus
@@ -38,7 +38,6 @@ export function TaskColumn({
   const [priorityFilter, setPriorityFilter] = useState<TTaskPriority | null>(null)
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [page, setPage] = useState(1)
 
   const taskParams = useMemo(() => {
@@ -52,48 +51,41 @@ export function TaskColumn({
       sortBy: SORT_MAP[sortBy],
     }
   }, [searchQuery, status, priorityFilter, categoryFilter, sortBy, page])
+
   const hasTasks = true
+
   const {
     data: taskListData,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage
-    // isLoading: isTaskLoading,
-    // isError: isTaskError,
-    // error: taskError,
   } = useInfiniteQuery({
     queryKey: ["tasks", taskParams],
     initialPageParam: 1,
     queryFn: ({ pageParam = 1 }) => getTaskList({ ...taskParams, page: pageParam as number }),
     getNextPageParam: (lastPage, allPages) => {
       const { page, totalPage } = lastPage
-      console.log({page, totalPage})
       if (page < totalPage)
         return page + 1
       return undefined
     }
-
   })
-
-  // const {
-  //     data: categoryListData,
-  //     isLoading: isCategoryLoading,
-  // } = useQuery({
-  //     queryKey: ["categories"],
-  //     queryFn: getCategoryList,
-  // })
 
   const tasks = taskListData?.pages.flatMap(data => data.data)
 
-  const handleScroll = (event) => {
-    // console.log(event)
-    const target = event.target
-    const {scrollHeight, scrollTop, clientHeight } = target
-
-    if(hasNextPage && (scrollTop - scrollHeight - clientHeight < 50)){
-      fetchNextPage()
-    }
-  }
+  const handleScroll = useCallback(
+    (event: React.UIEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLDivElement;
+      if (
+        hasNextPage &&
+        !isFetchingNextPage &&
+        target.scrollHeight - target.scrollTop - target.clientHeight < 50
+      ) {
+        fetchNextPage();
+      }
+    },
+    [fetchNextPage, hasNextPage, isFetchingNextPage],
+  );
 
   return (
     <div className="flex min-h-[520px] min-w-0 flex-col rounded-2xl border border-muted bg-secondary">

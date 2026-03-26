@@ -1,15 +1,11 @@
 "use client"
 
 import { LayoutGrid } from "lucide-react"
-import { useMemo, useState } from "react"
-import { Toolbar } from "./_components/toolbar"
-import { TaskBoard } from "./_components/task-holder/task-board"
-import { TTaskPriority, TTaskSortBy, TTaskStatus } from "./_config/task.schema"
+import { useState } from "react"
 import { toast } from "sonner"
-import { useQuery } from "@tanstack/react-query"
-import { getTaskList } from "@/axios/task-api"
-import { SORT_MAP } from "@/constants/task"
-
+import { TaskBoard } from "./_components/task-holder/task-board"
+import { Toolbar } from "./_components/toolbar"
+import { TTaskPriority, TTaskSortBy, TTaskStatus } from "./_config/task.schema"
 
 export default function TaskPage() {
 
@@ -19,13 +15,11 @@ export default function TaskPage() {
     const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
     const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-    const [page, setPage] = useState(1)
 
     const mockCategories = [
         { id: "1", name: "Work", color: "blue" },
         { id: "2", name: "Personal", color: "green" },
     ]
-    // const categories = categoryListData ?? []
 
     return (
         <main className="min-h-screen bg-primary">
