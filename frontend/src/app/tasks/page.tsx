@@ -16,11 +16,6 @@ export default function TaskPage() {
     const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
-    const mockCategories = [
-        { id: "1", name: "Work", color: "blue" },
-        { id: "2", name: "Personal", color: "green" },
-    ]
-
     return (
         <main className="min-h-screen bg-primary">
             <header className="sticky top-0 z-40 border-b border-muted bg-secondary/80 backdrop-blur-xl">
@@ -63,7 +58,6 @@ export default function TaskPage() {
                         onPriorityFilterChange={setPriorityFilter}
                         categoryFilter={categoryFilter}
                         onCategoryFilterChange={setCategoryFilter}
-                        categories={mockCategories}
                         sortBy={sortBy}
                         onSortChange={setSortBy}
                         onAddTask={() => setIsCreateDialogOpen(true)}
@@ -71,7 +65,6 @@ export default function TaskPage() {
                 </section>
 
                 <TaskBoard
-                    categories={mockCategories}
                     onAddTask={(status) => {
                         toast.message(`Add task to ${status}`)
                     }}

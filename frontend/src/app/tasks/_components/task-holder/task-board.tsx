@@ -6,7 +6,7 @@ import { TaskColumn } from "./task-column"
 import { TTaskCategoryDto, TTaskItemDto, TTaskStatus } from "../../_config/task.schema"
 
 type TTaskBoardProps = {
-  categories: TTaskCategoryDto[]
+  categories?: TTaskCategoryDto[]
   onAddTask?: (status: TTaskStatus) => void
   onEditTask?: (task: TTaskItemDto) => void
   onDeleteTask?: (taskId: string) => void

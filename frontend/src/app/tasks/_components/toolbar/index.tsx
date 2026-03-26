@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task"
 import { PRIORITY_OPTIONS, SORT_OPTIONS, TASK_STATUS_OPTIONS } from "@/constants/task"
+import { TTaskPriority, TTaskSortBy, TTaskStatus } from "../../_config/task.schema"
 
 export type TToolbarCategory = {
     id: string
