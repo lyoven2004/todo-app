@@ -73,6 +73,7 @@ export class PrismaTaskRepository implements ITaskRepository {
 
     async findAllByUserId(userId: string, query: TQueryTask): Promise<TPaginationResult<TTask>> {
         const {
+            search,
             status,
             priority,
             categoryId,
@@ -82,16 +83,39 @@ export class PrismaTaskRepository implements ITaskRepository {
             limit = 10,
         } = query;
 
+        const normalizedSearch = search?.trim()
         const skip = (page - 1) * limit;
+
+        const where: Prisma.TaskWhereInput = {
+            userId,
+                status,
+                priority,
+                categoryId,
+            ...(normalizedSearch
+                ? {
+                    OR: [
+                        {
+                            title: {
+                                contains: normalizedSearch,
+                                mode: "insensitive",
+                            },
+                        },
+                        {
+                            description: {
+                                contains: normalizedSearch,
+                                mode: "insensitive",
+                            },
+                        },
+                    ],
+                }
+                : {}),
+        }
+
+        console.log(where)
 
         const [tasks, total] = await Promise.all([
             this.prisma.task.findMany({
-                where: {
-                    userId,
-                    status,
-                    priority,
-                    categoryId,
-                },
+                where,
                 orderBy: {
                     [sortBy]: sortOrder,
                 },
@@ -100,12 +124,7 @@ export class PrismaTaskRepository implements ITaskRepository {
             }),
 
             this.prisma.task.count({
-                where: {
-                    userId,
-                    status,
-                    priority,
-                    categoryId,
-                },
+                where
             }),
         ]);
 

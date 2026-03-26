@@ -1,7 +1,7 @@
 "use client"
 
 import { LayoutGrid } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { TaskBoard } from "./_components/task-holder/task-board"
 import { Toolbar } from "./_components/toolbar"
@@ -9,12 +9,22 @@ import { TTaskPriority, TTaskSortBy, TTaskStatus } from "./_config/task.schema"
 
 export default function TaskPage() {
 
+    const [searchInput, setSearchInput] = useState("")
     const [searchQuery, setSearchQuery] = useState("")
+
     const [statusFilter, setStatusFilter] = useState<TTaskStatus | null>(null)
     const [priorityFilter, setPriorityFilter] = useState<TTaskPriority | null>(null)
     const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
     const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            setSearchQuery(searchInput.trim())
+        }, 400)
+
+        return () => clearTimeout(timeout)
+    }, [searchInput])
 
     return (
         <main className="min-h-screen bg-primary">
@@ -50,8 +60,8 @@ export default function TaskPage() {
 
                 <section className="mb-6">
                     <Toolbar
-                        searchQuery={searchQuery}
-                        onSearchChange={setSearchQuery}
+                        searchInput={searchInput}
+                        setSearchInput={setSearchInput}
                         statusFilter={statusFilter}
                         onStatusFilterChange={setStatusFilter}
                         priorityFilter={priorityFilter}
@@ -65,8 +75,14 @@ export default function TaskPage() {
                 </section>
 
                 <TaskBoard
+                    searchQuery={searchQuery}
+                    statusFilter={statusFilter}
+                    priorityFilter={priorityFilter}
+                    categoryFilter={categoryFilter}
+                    sortBy={sortBy}
                     onAddTask={(status) => {
                         toast.message(`Add task to ${status}`)
+                        setIsCreateDialogOpen(true)
                     }}
                     onEditTask={(task) => console.log("edit", task)}
                     onDeleteTask={(id) => console.log("delete", id)}

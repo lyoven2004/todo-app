@@ -3,9 +3,16 @@
 import { TASK_STATUS_OPTIONS } from "@/constants/task"
 import { cn } from "@/lib/utils"
 import { TaskColumn } from "./task-column"
-import { TTaskCategoryDto, TTaskItemDto, TTaskStatus } from "../../_config/task.schema"
+import { TTaskCategoryDto, TTaskItemDto, TTaskPriority, TTaskSortBy, TTaskStatus } from "../../_config/task.schema"
 
 type TTaskBoardProps = {
+  searchQuery: string
+
+  statusFilter: TTaskStatus | null
+  priorityFilter: TTaskPriority | null
+  categoryFilter: string | null
+  sortBy: TTaskSortBy
+
   categories?: TTaskCategoryDto[]
   onAddTask?: (status: TTaskStatus) => void
   onEditTask?: (task: TTaskItemDto) => void
@@ -14,6 +21,11 @@ type TTaskBoardProps = {
 }
 
 export function TaskBoard({
+  searchQuery,
+  statusFilter,
+  priorityFilter,
+  categoryFilter,
+  sortBy,
   categories,
   onAddTask,
   onEditTask,
@@ -25,30 +37,31 @@ export function TaskBoard({
     <section className={cn("w-full")}>
       <div className="rounded-2xl border border-muted bg-secondary p-4 shadow-sm">
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 2xl:grid-cols-4">
-          {TASK_STATUS_OPTIONS.map(({ value, label }) => {
-
-
-            return (
+          {TASK_STATUS_OPTIONS
+            .filter(({ value }) => !statusFilter || value === statusFilter)
+            .map(({ value, label }) => (
               <TaskColumn
                 key={value}
                 status={value}
                 title={label}
-          
-                
                 categories={categories}
-                onAddTask={
-                  onAddTask && value === "NOT_STARTED"
-                    ? () => onAddTask(value)
-                    : undefined
-                }
+                searchQuery={searchQuery}
+                priorityFilter={priorityFilter}
+                categoryFilter={categoryFilter}
+                sortBy={sortBy}
+                // onAddTask={
+                //   onAddTask && value === "NOT_STARTED"
+                //     ? () => onAddTask(value)
+                //     : undefined
+                // }
+                onAddTask={() => onAddTask?.(value)}
                 onEditTask={onEditTask}
                 onDeleteTask={onDeleteTask}
                 onDuplicateTask={onDuplicateTask}
               />
             )
-          })}
+            )}
         </div>
-
       </div>
     </section>
   )

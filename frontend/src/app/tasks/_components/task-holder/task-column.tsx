@@ -14,7 +14,10 @@ import { TaskCard } from "./task-card"
 type TTaskColumnProps = {
   status: TTaskStatus
   title: string
-  count?: number
+  searchQuery: string
+  priorityFilter: TTaskPriority | null
+  categoryFilter: string | null
+  sortBy: TTaskSortBy
   categories?: TTaskCategoryDto[]
   onAddTask?: () => void
   onEditTask?: (task: TTaskItemDto) => void
@@ -25,7 +28,10 @@ type TTaskColumnProps = {
 export function TaskColumn({
   status,
   title,
-  count = 0,
+  searchQuery,
+  priorityFilter,
+  categoryFilter,
+  sortBy,
   categories = [],
   onAddTask,
   onEditTask,
@@ -34,15 +40,14 @@ export function TaskColumn({
 }: TTaskColumnProps) {
   const config = STATUS_UI_CONFIG[status]
   const StatusComponent = STATUS_ICONS[status]
-  const [searchQuery, setSearchQuery] = useState("")
-  const [priorityFilter, setPriorityFilter] = useState<TTaskPriority | null>(null)
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
-  const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
-  const [page, setPage] = useState(1)
+  // const [searchQuery, setSearchQuery] = useState("")
+  // const [priorityFilter, setPriorityFilter] = useState<TTaskPriority | null>(null)
+  // const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
+  // const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
+  // const [page, setPage] = useState(1)
 
   const taskParams = useMemo(() => {
     return {
-      page,
       limit: 5,
       search: searchQuery || undefined,
       status,
@@ -50,9 +55,7 @@ export function TaskColumn({
       categoryId: categoryFilter ?? undefined,
       sortBy: SORT_MAP[sortBy],
     }
-  }, [searchQuery, status, priorityFilter, categoryFilter, sortBy, page])
-
-  const hasTasks = true
+  }, [searchQuery, status, priorityFilter, categoryFilter, sortBy])
 
   const {
     data: taskListData,
@@ -60,9 +63,16 @@ export function TaskColumn({
     hasNextPage,
     isFetchingNextPage
   } = useInfiniteQuery({
-    queryKey: ["tasks", taskParams],
+    queryKey: [
+      "tasks",
+      status,
+      searchQuery,
+      priorityFilter,
+      categoryFilter,
+      sortBy
+    ],
     initialPageParam: 1,
-    queryFn: ({ pageParam = 1 }) => getTaskList({ ...taskParams, page: pageParam as number }),
+    queryFn: ({ pageParam = 1 }) => getTaskList({ ...taskParams, page: pageParam }),
     getNextPageParam: (lastPage, allPages) => {
       const { page, totalPage } = lastPage
       if (page < totalPage)
@@ -71,7 +81,8 @@ export function TaskColumn({
     }
   })
 
-  const tasks = taskListData?.pages.flatMap(data => data.data)
+  const tasks = taskListData?.pages.flatMap(data => data.data) ?? []
+  const hasTasks = tasks.length > 0
 
   const handleScroll = useCallback(
     (event: React.UIEvent<HTMLDivElement>) => {
@@ -110,7 +121,7 @@ export function TaskColumn({
               config.badgeClassName
             )}
           >
-            {count}
+            {tasks.length}
           </span>
         </div>
 

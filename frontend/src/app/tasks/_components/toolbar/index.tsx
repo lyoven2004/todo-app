@@ -25,8 +25,8 @@ export type TToolbarCategory = {
 }
 
 type TToolbarProps = {
-    searchQuery: string
-    onSearchChange: (value: string) => void
+    searchInput: string
+    setSearchInput: (value: string) => void
 
     statusFilter: TTaskStatus | null
     onStatusFilterChange: (value: TTaskStatus | null) => void
@@ -54,8 +54,8 @@ function getCategoryDotClass(color?: string) {
 }
 
 export function Toolbar({
-    searchQuery,
-    onSearchChange,
+    searchInput,
+    setSearchInput,
     statusFilter,
     onStatusFilterChange,
     priorityFilter,
@@ -82,8 +82,8 @@ export function Toolbar({
             <div className="relative w-full lg:max-w-sm">
                 <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                    value={searchQuery}
-                    onChange={(e) => onSearchChange(e.target.value)}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                     placeholder="Search tasks..."
                     className="h-10 rounded-xl pl-9"
                 />
@@ -97,8 +97,8 @@ export function Toolbar({
                             size="sm"
                             className={cn(
                                 "h-10 rounded-xl px-4",
-                                hasActiveFilters &&
-                                "border-primary/30 bg-primary/5 text-primary hover:bg-primary/10"
+                                hasActiveFilters 
+                                // "border-primary/30 bg-primary/5 text-primary hover:bg-primary/10"
                             )}
                         >
                             <SlidersHorizontal className="size-4" />
@@ -113,7 +113,7 @@ export function Toolbar({
                         align="end"
                         className="max-h-[420px] w-56 overflow-auto rounded-xl"
                     >
-                        <DropdownMenuLabel>Status</DropdownMenuLabel>
+                        {/* <DropdownMenuLabel>Status</DropdownMenuLabel>
                         <DropdownMenuCheckboxItem
                             checked={statusFilter === null}
                             onCheckedChange={() => onStatusFilterChange(null)}
@@ -133,9 +133,9 @@ export function Toolbar({
                             >
                                 {option.label}
                             </DropdownMenuCheckboxItem>
-                        ))}
+                        ))} */}
 
-                        <DropdownMenuSeparator />
+                        {/* <DropdownMenuSeparator /> */}
 
                         <DropdownMenuLabel>Priority</DropdownMenuLabel>
                         <DropdownMenuCheckboxItem
