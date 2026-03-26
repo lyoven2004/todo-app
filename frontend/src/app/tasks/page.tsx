@@ -18,45 +18,34 @@ export default function TaskPage() {
     const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
     const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-    const [editingTask, setEditingTask] = useState<TTaskItemDto | null>(null)
+    // const [editingTask, setEditingTask] = useState<TTaskItemDto | null>(null)
+    const [taskData, setTaskData] = useState<any>()
+    const [mode, setMode] = useState<'create' | 'edit'>('create')
 
-    const handleOpenCreateTask = () => {
-        setEditingTask(null)
+    const handleOpenCreateTask = (status?: string) => {
+        setTaskData({
+            title: "",
+            description: "",
+            status,
+            priority: "MEDIUM",
+            dueDate: "",
+            category: "",
+        })
         setIsCreateDialogOpen(true)
+        setMode('create')
     }
 
     const handleOpenEditTask = (task: TTaskItemDto) => {
-        setIsCreateDialogOpen(false)
-        setEditingTask(task)
+        setIsCreateDialogOpen(true)
+        setTaskData(task)
+        setMode('edit')
     }
 
     const handleCloseTaskModal = () => {
         setIsCreateDialogOpen(false)
-        setEditingTask(null)
+        // setEditingTask(null)
+        setTaskData(null)
     }
-
-    // const handleSubmit = (values: TTaskFormValues) => {
-    //     const payload = {
-    //         title: values.title,
-    //         description: values.description || null,
-    //         status: values.status,
-    //         priority: values.priority,
-    //         expiredAt: values.dueDate || null,
-    //         categoryId: values.category || null,
-    //     }
-
-    //     if (mode === "create") {
-    //         createTaskMutation.mutate(payload)
-    //         return
-    //     }
-
-    //     if (!task) return
-
-    //     updateTaskMutation.mutate({
-    //         taskId: task.id,
-    //         data: payload,
-    //     })
-    // }
 
     return (
         <main className="min-h-screen bg-primary">
@@ -113,7 +102,7 @@ export default function TaskPage() {
                     categoryFilter={categoryFilter}
                     sortBy={sortBy}
                     onAddTask={(status) => {
-                        handleOpenCreateTask()
+                        handleOpenCreateTask(status)
                     }}
                     onEditTask={handleOpenEditTask}
                     onDeleteTask={(id) => console.log("delete", id)}
@@ -121,12 +110,12 @@ export default function TaskPage() {
                 />
 
                 <TaskFormModal
-                    mode={editingTask ? "edit" : "create"}
-                    open={isCreateDialogOpen || !!editingTask}
+                    mode={mode}
+                    open={isCreateDialogOpen}
                     onOpenChange={(open) => {
                         if (!open) handleCloseTaskModal()
                     }}
-                    task={editingTask ?? undefined}
+                    task={taskData}
                     categories={[]}
                 />
 

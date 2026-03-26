@@ -246,14 +246,15 @@ export function TaskForm({
                           />
                           <CommandList>
                             <CommandEmpty>
-                              <button
+                              <Button
                                 type="button"
+                                variant={'ghost'}
                                 className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
                                 onClick={handleCreateCategory}
                               >
                                 <Plus className="size-4 text-muted-foreground" />
                                 <span>Create &quot;{newCategoryName}&quot;</span>
-                              </button>
+                              </Button>
                             </CommandEmpty>
 
                             <CommandGroup>

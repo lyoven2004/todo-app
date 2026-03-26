@@ -39,7 +39,7 @@ type TTaskFormModalProps = {
     mode: TTaskFormMode
     open: boolean
     onOpenChange: (open: boolean) => void
-    task?: TTaskItemDto
+    task: TTaskItemDto
     categories: TTaskCategoryDto[]
     onAddCategory?: (name: string) => void
 }
@@ -54,27 +54,27 @@ export function TaskFormModal({
 }: TTaskFormModalProps) {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
-    const defaultValues = useMemo<Partial<TTaskFormValues>>(() => {
-        if (task) {
-            return {
-                title: task.title,
-                description: task.description ?? "",
-                status: task.status,
-                priority: task.priority,
-                dueDate: task.expiredAt ?? "",
-                category: task.categoryId ?? "",
-            }
-        }
+    // const defaultValues = useMemo<Partial<TTaskFormValues>>(() => {
+    //     if (task) {
+    //         return {
+    //             title: task.title,
+    //             description: task.description ?? "",
+    //             status: task.status,
+    //             priority: task.priority,
+    //             dueDate: task.expiredAt ?? "",
+    //             category: task.categoryId ?? "",
+    //         }
+    //     }
 
-        return {
-            title: "",
-            description: "",
-            status: "NOT_STARTED",
-            priority: "MEDIUM",
-            dueDate: "",
-            category: "",
-        }
-    }, [mode, task])
+    //     return {
+    //         title: "",
+    //         description: "",
+    //         status: "NOT_STARTED",
+    //         priority: "MEDIUM",
+    //         dueDate: "",
+    //         category: "",
+    //     }
+    // }, [mode, task])
 
     const title = mode === "create" ? "Create Task" : "Edit Task"
     const description =
@@ -144,6 +144,7 @@ export function TaskFormModal({
         })
     }
 
+
     const isSubmitting =
         createTaskMutation.isPending || updateTaskMutation.isPending
 
@@ -171,7 +172,7 @@ export function TaskFormModal({
 
                     <div className="px-6 py-6">
                         <TaskForm
-                            defaultValues={defaultValues}
+                            defaultValues={task}
                             categories={categories}
                             onSubmit={handleSubmit}
                             onCancel={handleClose}
@@ -245,7 +246,6 @@ export function TaskFormModal({
                                 className="rounded-lg bg-red-600 hover:bg-red-700"
                                 disabled={deleteTaskMutation.isPending}
                             >
-                                Delete
                                 {deleteTaskMutation.isPending ? "Deleting..." : "Delete"}
                             </AlertDialogAction>
                         </AlertDialogFooter>
