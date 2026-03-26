@@ -72,40 +72,6 @@ export function TaskCard({
           <h3 className="line-clamp-2 text-sm font-medium leading-snug text-foreground">
             {task.title}
           </h3>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-7 shrink-0 -mr-1 -mt-1 opacity-0 transition-opacity group-hover:opacity-100"
-              >
-                <MoreHorizontal className="size-4 text-muted-foreground" />
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end" className="w-40 rounded-xl">
-              <DropdownMenuItem onClick={() => onEdit?.(task)}>
-                <Pencil className="mr-2 size-4" />
-                Edit
-              </DropdownMenuItem>
-
-              <DropdownMenuItem onClick={() => onDuplicate?.(task)}>
-                <Copy className="mr-2 size-4" />
-                Duplicate
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-
-              <DropdownMenuItem
-                onClick={() => onDelete?.(task.id)}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="mr-2 size-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
 
         <div

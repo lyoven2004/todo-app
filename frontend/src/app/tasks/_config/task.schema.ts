@@ -26,6 +26,15 @@ export const taskCategorySchema = z.object({
   color: z.string().optional(),
 })
 
+export const taskFormSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  status: z.enum(["NOT_STARTED", "IN_PROGRESS", "DONE", "FAILED"]),
+  priority: z.enum(["HIGH", "MEDIUM", "LOW"]),
+  dueDate: z.string().optional(),
+  category: z.string().optional(),
+})
+
 export const taskItemSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -69,3 +78,4 @@ export type TGetTaskListRequestDto = z.infer<typeof getTaskListRequestSchema>
 export type TGetTaskListResponseDto = z.infer<typeof getTaskListResponseSchema>
 export type TGetTaskDetailResponseDto = z.infer<typeof getTaskDetailResponseSchema>
 export type TGetCategoryListResponseDto = z.infer<typeof getCategoryListResponseSchema>
+export type TTaskFormValues = z.infer<typeof taskFormSchema>
