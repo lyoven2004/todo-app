@@ -81,7 +81,6 @@ export function TaskFormModal({
         mode === "create"
             ? "Add a new task with all the important details."
             : "Update the details for this task."
-    const submitLabel = mode === "create" ? "Create Task" : "Save Changes"
 
     const handleClose = () => onOpenChange(false)
 
@@ -145,6 +144,18 @@ export function TaskFormModal({
         })
     }
 
+    const isSubmitting =
+        createTaskMutation.isPending || updateTaskMutation.isPending
+
+    const submitLabel =
+        mode === "create"
+            ? createTaskMutation.isPending
+                ? "Creating..."
+                : "Create"
+            : updateTaskMutation.isPending
+                ? "Saving changes..."
+                : "Save Changes"
+
     return (
         <>
             <Dialog open={open} onOpenChange={onOpenChange}>
@@ -171,41 +182,40 @@ export function TaskFormModal({
                     </div>
 
                     <DialogFooter className="flex-row justify-end border-t border-border/50 bg-muted/30 px-6 py-4 flex items-center h-full mx-0">
-                            <div>
-                                {mode === "edit" && task && (
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        className="gap-2 text-muted-foreground hover:bg-red-50 hover:text-red-600"
-                                        onClick={() => setShowDeleteConfirm(true)}
-                                    >
-                                        <Trash2 className="size-4" />
-                                        Delete
-                                    </Button>
-                                )}
-                            </div>
-
-                            <div className="flex items-center gap-3">
+                        <div>
+                            {mode === "edit" && task && (
                                 <Button
                                     type="button"
-                                    variant="outline"
-                                    onClick={handleClose}
-                                    className="px-4"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="gap-2 text-muted-foreground hover:bg-red-50 hover:text-red-600"
+                                    onClick={() => setShowDeleteConfirm(true)}
                                 >
-                                    Cancel
+                                    <Trash2 className="size-4" />
+                                    Delete
                                 </Button>
+                            )}
+                        </div>
 
-                                <Button
-                                    type="submit"
-                                    form="task-form"
-                                    // disabled={isSubmitting}
-                                    className="px-5"
-                                >
-                                    Submit
-                                    {/* {isSubmitting ? "Saving..." : submitLabel} */}
-                                </Button>
-                            </div>
+                        <div className="flex items-center gap-3">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={handleClose}
+                                className="px-4"
+                            >
+                                Cancel
+                            </Button>
+
+                            <Button
+                                type="submit"
+                                form="task-form"
+                                disabled={isSubmitting}
+                                className="px-5"
+                            >
+                                {submitLabel}
+                            </Button>
+                        </div>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -233,10 +243,10 @@ export function TaskFormModal({
                             <AlertDialogAction
                                 onClick={handleDelete}
                                 className="rounded-lg bg-red-600 hover:bg-red-700"
-                            // disabled={isDeleting}
+                                disabled={deleteTaskMutation.isPending}
                             >
                                 Delete
-                                {/* {isDeleting ? "Deleting..." : "Delete"} */}
+                                {deleteTaskMutation.isPending ? "Deleting..." : "Delete"}
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>

@@ -14,13 +14,6 @@ export async function getTaskList(
   return response.data.data
 }
 
-export async function getTaskDetail(
-  taskId: string
-): Promise<TGetTaskDetailResponseDto> {
-  const response = await api.get(`/tasks/${taskId}`)
-  return response.data.data
-}
-
 export async function createTask(
   data: Partial<TTaskItemDto>
 ): Promise<TGetTaskDetailResponseDto> {

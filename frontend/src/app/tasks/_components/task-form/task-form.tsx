@@ -60,7 +60,6 @@ type TTaskFormProps = {
   onSubmit: (values: TTaskFormValues) => void
   onCancel?: () => void
   onAddCategory?: (name: string) => void
-  // isLoading?: boolean
   submitLabel?: string
   hideFooter?: boolean
 }
@@ -99,8 +98,6 @@ export function TaskForm({
   onSubmit,
   onCancel,
   onAddCategory,
-  // isLoading = false,
-  submitLabel = "Save",
   hideFooter = false,
 }: TTaskFormProps) {
   const [categoryPopoverOpen, setCategoryPopoverOpen] = useState(false)
@@ -432,12 +429,12 @@ export function TaskForm({
                       <SelectContent>
                         {TASK_STATUS_OPTIONS.map((option) => {
                           const Icon = STATUS_ICONS[option.value]
-                           const config = STATUS_UI_CONFIG[option.value]
+                          const config = STATUS_UI_CONFIG[option.value]
 
                           return (
                             <SelectItem key={option.value} value={option.value}>
                               <span className="flex items-center gap-2">
-                                <Icon className={cn("size-4", config.iconClassName)}/>
+                                <Icon className={cn("size-4", config.iconClassName)} />
                                 <span>{option.label}</span>
                               </span>
                             </SelectItem>
@@ -462,7 +459,6 @@ export function TaskForm({
               </Button>
             )}
             <Button type="submit">
-              {/* {isLoading ? "Saving..." : submitLabel} */}
             </Button>
           </div>
         )}
