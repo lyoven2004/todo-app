@@ -38,7 +38,6 @@ export function TaskBoard({
       <div className="rounded-2xl border border-muted bg-secondary p-4 shadow-sm">
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 2xl:grid-cols-4">
           {TASK_STATUS_OPTIONS
-            .filter(({ value }) => !statusFilter || value === statusFilter)
             .map(({ value, label }) => (
               <TaskColumn
                 key={value}
@@ -49,11 +48,6 @@ export function TaskBoard({
                 priorityFilter={priorityFilter}
                 categoryFilter={categoryFilter}
                 sortBy={sortBy}
-                // onAddTask={
-                //   onAddTask && value === "NOT_STARTED"
-                //     ? () => onAddTask(value)
-                //     : undefined
-                // }
                 onAddTask={() => onAddTask?.(value)}
                 onEditTask={onEditTask}
                 onDeleteTask={onDeleteTask}

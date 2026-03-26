@@ -1,8 +1,9 @@
 "use client"
 
 import { LayoutGrid } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
+import { useDebounce } from "../hooks/use-debounce"
 import { TaskBoard } from "./_components/task-holder/task-board"
 import { Toolbar } from "./_components/toolbar"
 import { TTaskPriority, TTaskSortBy, TTaskStatus } from "./_config/task.schema"
@@ -10,21 +11,12 @@ import { TTaskPriority, TTaskSortBy, TTaskStatus } from "./_config/task.schema"
 export default function TaskPage() {
 
     const [searchInput, setSearchInput] = useState("")
-    const [searchQuery, setSearchQuery] = useState("")
-
+    const searchQuery = useDebounce(searchInput.trim(), 400)
     const [statusFilter, setStatusFilter] = useState<TTaskStatus | null>(null)
     const [priorityFilter, setPriorityFilter] = useState<TTaskPriority | null>(null)
     const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
     const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            setSearchQuery(searchInput.trim())
-        }, 400)
-
-        return () => clearTimeout(timeout)
-    }, [searchInput])
 
     return (
         <main className="min-h-screen bg-primary">

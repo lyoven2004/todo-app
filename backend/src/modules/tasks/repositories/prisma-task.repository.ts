@@ -111,8 +111,6 @@ export class PrismaTaskRepository implements ITaskRepository {
                 : {}),
         }
 
-        console.log(where)
-
         const [tasks, total] = await Promise.all([
             this.prisma.task.findMany({
                 where,

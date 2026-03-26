@@ -40,11 +40,6 @@ export function TaskColumn({
 }: TTaskColumnProps) {
   const config = STATUS_UI_CONFIG[status]
   const StatusComponent = STATUS_ICONS[status]
-  // const [searchQuery, setSearchQuery] = useState("")
-  // const [priorityFilter, setPriorityFilter] = useState<TTaskPriority | null>(null)
-  // const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
-  // const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
-  // const [page, setPage] = useState(1)
 
   const taskParams = useMemo(() => {
     return {

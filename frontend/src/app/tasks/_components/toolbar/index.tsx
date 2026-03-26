@@ -97,15 +97,10 @@ export function Toolbar({
                             size="sm"
                             className={cn(
                                 "h-10 rounded-xl px-4",
-                                hasActiveFilters 
-                                // "border-primary/30 bg-primary/5 text-primary hover:bg-primary/10"
                             )}
                         >
                             <SlidersHorizontal className="size-4" />
                             <span className="ml-2 hidden sm:inline">Filter</span>
-                            {hasActiveFilters && (
-                                <span className="ml-2 size-2 rounded-full bg-primary" />
-                            )}
                         </Button>
                     </DropdownMenuTrigger>
 
@@ -113,30 +108,6 @@ export function Toolbar({
                         align="end"
                         className="max-h-[420px] w-56 overflow-auto rounded-xl"
                     >
-                        {/* <DropdownMenuLabel>Status</DropdownMenuLabel>
-                        <DropdownMenuCheckboxItem
-                            checked={statusFilter === null}
-                            onCheckedChange={() => onStatusFilterChange(null)}
-                        >
-                            All Statuses
-                        </DropdownMenuCheckboxItem>
-
-                        {TASK_STATUS_OPTIONS.map((option) => (
-                            <DropdownMenuCheckboxItem
-                                key={option.value}
-                                checked={statusFilter === option.value}
-                                onCheckedChange={() =>
-                                    onStatusFilterChange(
-                                        statusFilter === option.value ? null : option.value
-                                    )
-                                }
-                            >
-                                {option.label}
-                            </DropdownMenuCheckboxItem>
-                        ))} */}
-
-                        {/* <DropdownMenuSeparator /> */}
-
                         <DropdownMenuLabel>Priority</DropdownMenuLabel>
                         <DropdownMenuCheckboxItem
                             checked={priorityFilter === null}
