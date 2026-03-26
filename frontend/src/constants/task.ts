@@ -1,4 +1,4 @@
-import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task";
+import { TTaskPriority, TTaskStatus, TTaskSortBy } from "@/app/tasks/_config/task.schema";
 import { CheckCircle2, Circle, Loader2, LucideIcon, XCircle } from "lucide-react";
 
 export const TASK_STATUS_OPTIONS: Array<{ label: string; value: TTaskStatus }> = [
@@ -7,6 +7,13 @@ export const TASK_STATUS_OPTIONS: Array<{ label: string; value: TTaskStatus }> =
     { label: "Done", value: "DONE" },
     { label: "Failed", value: "FAILED" },
 ]
+
+export const SORT_MAP = {
+    newest: "createdAt",
+    oldest: "createdAt",
+    dueDate: "expiredAt",
+    priority: "priority",
+} as const
 
 export const PRIORITY_OPTIONS: Array<{
     label: string

@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { TTaskPriority, TTaskSortBy, TTaskStatus } from "@/types/task"
 import { PRIORITY_OPTIONS, SORT_OPTIONS, TASK_STATUS_OPTIONS } from "@/constants/task"
+import { TTaskPriority, TTaskSortBy, TTaskStatus } from "../../_config/task.schema"
 
 export type TToolbarCategory = {
     id: string
@@ -25,8 +25,8 @@ export type TToolbarCategory = {
 }
 
 type TToolbarProps = {
-    searchQuery: string
-    onSearchChange: (value: string) => void
+    searchInput: string
+    setSearchInput: (value: string) => void
 
     statusFilter: TTaskStatus | null
     onStatusFilterChange: (value: TTaskStatus | null) => void
@@ -54,8 +54,8 @@ function getCategoryDotClass(color?: string) {
 }
 
 export function Toolbar({
-    searchQuery,
-    onSearchChange,
+    searchInput,
+    setSearchInput,
     statusFilter,
     onStatusFilterChange,
     priorityFilter,
@@ -82,8 +82,8 @@ export function Toolbar({
             <div className="relative w-full lg:max-w-sm">
                 <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                    value={searchQuery}
-                    onChange={(e) => onSearchChange(e.target.value)}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                     placeholder="Search tasks..."
                     className="h-10 rounded-xl pl-9"
                 />
@@ -97,15 +97,10 @@ export function Toolbar({
                             size="sm"
                             className={cn(
                                 "h-10 rounded-xl px-4",
-                                hasActiveFilters &&
-                                "border-primary/30 bg-primary/5 text-primary hover:bg-primary/10"
                             )}
                         >
                             <SlidersHorizontal className="size-4" />
                             <span className="ml-2 hidden sm:inline">Filter</span>
-                            {hasActiveFilters && (
-                                <span className="ml-2 size-2 rounded-full bg-primary" />
-                            )}
                         </Button>
                     </DropdownMenuTrigger>
 
@@ -113,30 +108,6 @@ export function Toolbar({
                         align="end"
                         className="max-h-[420px] w-56 overflow-auto rounded-xl"
                     >
-                        <DropdownMenuLabel>Status</DropdownMenuLabel>
-                        <DropdownMenuCheckboxItem
-                            checked={statusFilter === null}
-                            onCheckedChange={() => onStatusFilterChange(null)}
-                        >
-                            All Statuses
-                        </DropdownMenuCheckboxItem>
-
-                        {TASK_STATUS_OPTIONS.map((option) => (
-                            <DropdownMenuCheckboxItem
-                                key={option.value}
-                                checked={statusFilter === option.value}
-                                onCheckedChange={() =>
-                                    onStatusFilterChange(
-                                        statusFilter === option.value ? null : option.value
-                                    )
-                                }
-                            >
-                                {option.label}
-                            </DropdownMenuCheckboxItem>
-                        ))}
-
-                        <DropdownMenuSeparator />
-
                         <DropdownMenuLabel>Priority</DropdownMenuLabel>
                         <DropdownMenuCheckboxItem
                             checked={priorityFilter === null}

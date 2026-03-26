@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
+import { getTokenFromCookie } from "./auth-cookie";
 
 export class ApiError extends Error {
   status?: number
@@ -24,10 +25,13 @@ export class ApiError extends Error {
 function createApiClient(): AxiosInstance {
   const instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
-    headers: {
-      "Content-Type": "application/json",
-    },
     withCredentials: true,
+  })
+
+  instance.interceptors.request.use(async (config) => {
+    const token = await getTokenFromCookie('accessToken')
+    config.headers.Authorization = `Bearer ${token}`
+    return config
   })
 
   instance.interceptors.response.use(

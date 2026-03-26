@@ -11,6 +11,7 @@ export type TCreateTaskInput = {
 };
 
 export type TQueryTask = {
+  search?: string
   status?: TaskStatus;
   priority?: TaskPriority;
   categoryId?: string;

@@ -1,29 +1,37 @@
 "use client"
 
+import { getTaskList } from "@/axios/task-api"
 import { Button } from "@/components/ui/button"
-import { STATUS_ICONS, STATUS_UI_CONFIG } from "@/constants/task"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { SORT_MAP, STATUS_ICONS, STATUS_UI_CONFIG } from "@/constants/task"
 import { cn } from "@/lib/utils"
-import { TTaskCardData, TTaskCategory, TTaskStatus } from "@/types/task"
+import { useInfiniteQuery } from "@tanstack/react-query"
 import { Plus } from "lucide-react"
+import { useCallback, useMemo, useState } from "react"
+import { TTaskCategoryDto, TTaskItemDto, TTaskPriority, TTaskSortBy, TTaskStatus } from "../../_config/task.schema"
 import { TaskCard } from "./task-card"
 
 type TTaskColumnProps = {
   status: TTaskStatus
   title: string
-  count?: number
-  tasks?: TTaskCardData[]
-  categories?: TTaskCategory[]
+  searchQuery: string
+  priorityFilter: TTaskPriority | null
+  categoryFilter: string | null
+  sortBy: TTaskSortBy
+  categories?: TTaskCategoryDto[]
   onAddTask?: () => void
-  onEditTask?: (task: TTaskCardData) => void
+  onEditTask?: (task: TTaskItemDto) => void
   onDeleteTask?: (taskId: string) => void
-  onDuplicateTask?: (task: TTaskCardData) => void
+  onDuplicateTask?: (task: TTaskItemDto) => void
 }
 
 export function TaskColumn({
   status,
   title,
-  count = 0,
-  tasks = [],
+  searchQuery,
+  priorityFilter,
+  categoryFilter,
+  sortBy,
   categories = [],
   onAddTask,
   onEditTask,
@@ -32,7 +40,58 @@ export function TaskColumn({
 }: TTaskColumnProps) {
   const config = STATUS_UI_CONFIG[status]
   const StatusComponent = STATUS_ICONS[status]
+
+  const taskParams = useMemo(() => {
+    return {
+      limit: 5,
+      search: searchQuery || undefined,
+      status,
+      priority: priorityFilter ?? undefined,
+      categoryId: categoryFilter ?? undefined,
+      sortBy: SORT_MAP[sortBy],
+    }
+  }, [searchQuery, status, priorityFilter, categoryFilter, sortBy])
+
+  const {
+    data: taskListData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  } = useInfiniteQuery({
+    queryKey: [
+      "tasks",
+      status,
+      searchQuery,
+      priorityFilter,
+      categoryFilter,
+      sortBy
+    ],
+    initialPageParam: 1,
+    queryFn: ({ pageParam = 1 }) => getTaskList({ ...taskParams, page: pageParam }),
+    getNextPageParam: (lastPage, allPages) => {
+      const { page, totalPage } = lastPage
+      if (page < totalPage)
+        return page + 1
+      return undefined
+    }
+  })
+
+  const tasks = taskListData?.pages.flatMap(data => data.data) ?? []
   const hasTasks = tasks.length > 0
+
+  const handleScroll = useCallback(
+    (event: React.UIEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLDivElement;
+      if (
+        hasNextPage &&
+        !isFetchingNextPage &&
+        target.scrollHeight - target.scrollTop - target.clientHeight < 50
+      ) {
+        fetchNextPage();
+      }
+    },
+    [fetchNextPage, hasNextPage, isFetchingNextPage],
+  );
 
   return (
     <div className="flex min-h-[520px] min-w-0 flex-col rounded-2xl border border-muted bg-secondary">
@@ -57,7 +116,7 @@ export function TaskColumn({
               config.badgeClassName
             )}
           >
-            {count}
+            {tasks.length}
           </span>
         </div>
 
@@ -75,18 +134,21 @@ export function TaskColumn({
 
       <div className={cn("flex flex-1 flex-col p-3", config.bodyClassName)}>
         {hasTasks ? (
-          <div className="flex flex-1 flex-col gap-3">
-            {tasks.map((task) => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                categories={categories}
-                onEdit={onEditTask}
-                onDelete={onDeleteTask}
-                onDuplicate={onDuplicateTask}
-              />
-            ))}
-          </div>
+          <ScrollArea onScrollCapture={handleScroll}>
+            <div className="flex flex-1 flex-col gap-3 h-[500px]">
+              {tasks?.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  categories={categories}
+                  onEdit={onEditTask}
+                  onDelete={onDeleteTask}
+                  onDuplicate={onDuplicateTask}
+                />
+              ))}
+            </div>
+          </ScrollArea>
+
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-muted">
             <p className="text-sm text-muted-foreground">No tasks yet</p>

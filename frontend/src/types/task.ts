@@ -1,6 +1,4 @@
-export type TTaskStatus = "NOT_STARTED" | "IN_PROGRESS" | "DONE" | "FAILED"
-export type TTaskPriority = "HIGH" | "MEDIUM" | "LOW"
-export type TTaskSortBy = "newest" | "oldest" | "dueDate" | "priority"
+import { TTaskPriority, TTaskStatus } from "@/app/tasks/_config/task.schema"
 
 export type TTaskCategory = {
   id: string
@@ -8,12 +6,3 @@ export type TTaskCategory = {
   color?: string
 }
 
-export type TTaskCardData = {
-  id: string
-  title: string
-  status: TTaskStatus
-  description?: string | null
-  dueDate?: string | null
-  priority: TTaskPriority
-  categoryId?: string | null
-}

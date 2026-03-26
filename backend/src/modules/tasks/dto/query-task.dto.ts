@@ -22,6 +22,9 @@ export class QueryTasksDto {
   @IsOptional()
   categoryId?: string;
 
+  @IsOptional()
+  search?: string;
+
   @IsIn(['createdAt', 'expiredAt'])
   @IsOptional()
   sortBy?: 'createdAt' | 'expiredAt';
