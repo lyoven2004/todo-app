@@ -222,12 +222,6 @@ export function TaskForm({
                           >
                             {selectedCategory ? (
                               <span className="flex items-center gap-2">
-                                <span
-                                  className={cn(
-                                    "size-2.5 rounded-full",
-                                    selectedCategory.color?.split(" ")[0]
-                                  )}
-                                />
                                 <span className="truncate">
                                   {selectedCategory.name}
                                 </span>
