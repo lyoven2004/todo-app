@@ -88,7 +88,7 @@ export function TaskFormModal({
     const deleteTaskMutation = useMutation({
         mutationFn: deleteTask,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["tasks", status] })
+            queryClient.invalidateQueries({ queryKey: ["tasks", task.status] })
             onOpenChange(false)
         },
         onError: handleMutationError
