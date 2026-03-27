@@ -16,7 +16,7 @@ export class CategoriesService {
   async create(dto: CreateCategoryDto, userId: string): Promise<TCategory> {
     const { name } = dto;
 
-    const normalizedName = normalizeName(name)
+    const normalizedName = normalizeName(name);
 
     const existing = await this.categoryRepository.findByNameAndUserId(normalizedName, userId)
 
