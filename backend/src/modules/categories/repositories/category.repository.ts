@@ -1,3 +1,4 @@
+import { TPaginationResult } from 'src/common/types/pagination.type';
 import { TCategory } from '../entities/category.entity';
 
 export type TCreateCategoryInput = {
@@ -6,6 +7,8 @@ export type TCreateCategoryInput = {
 
 export type TQueryCategory = {
     search?: string
+    page?: number;
+    limit?: number;
 }
 
 export interface ICategoryRepository {
@@ -15,5 +18,5 @@ export interface ICategoryRepository {
     findByNameAndUserId(name: string, userId: string)
         : Promise<TCategory | null>;
     findAllByUserId(userId: string, query: TQueryCategory)
-        : Promise<TCategory[]>
+        : Promise<TPaginationResult<TCategory>>
 }
