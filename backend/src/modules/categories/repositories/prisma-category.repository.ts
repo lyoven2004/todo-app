@@ -52,7 +52,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
         const {
             search,
             page = 1,
-            limit = 7,
+            limit = 10,
         } = query;
 
         const normalizedSearch = normalizeName(search || "");
@@ -89,13 +89,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
             page,
             total,
             totalPage: Math.ceil(total / limit),
-            data: categories.map((category) => ({
-                id: category.id,
-                name: category.name,
-                userId: category.userId,
-                createdAt: category.createdAt,
-                updatedAt: category.updatedAt,
-            }))
+            data: categories
         }
     }
 }
