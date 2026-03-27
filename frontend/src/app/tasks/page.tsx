@@ -53,7 +53,7 @@ export default function TaskPage() {
                     <div className="flex h-16 items-center">
                         <div className="flex items-center gap-3">
                             <div className="flex size-9 items-center justify-center rounded-xl bg-brand-panel shadow-brand">
-                                <LayoutGrid className="size-4.5 text-primary-foreground" />
+                                <LayoutGrid className="size-4.5 text-white" />
                             </div>
                             <div>
                                 <h1 className="text-base font-semibold tracking-tight text-foreground">
