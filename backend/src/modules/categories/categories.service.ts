@@ -5,6 +5,7 @@ import { TCategory } from './entities/category.entity';
 import type { ICategoryRepository, TCreateCategoryInput } from './repositories/category.repository';
 import { CATEGORY_REPOSITORY } from './repositories/category-token';
 import { normalizeName } from 'src/common/utils/normalize.util';
+import { QueryCategoryDto } from './dto/query-category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -30,8 +31,8 @@ export class CategoriesService {
     return this.categoryRepository.create(data, userId);
   }
 
-  findAll() {
-    return `This action returns all categories`;
+  findAll(userId: string, query: QueryCategoryDto) {
+    return this.categoryRepository.findAllByUserId(userId, query);
   }
 
   findOne(id: number) {
