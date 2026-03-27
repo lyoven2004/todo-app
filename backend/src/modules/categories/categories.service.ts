@@ -25,7 +25,7 @@ export class CategoriesService {
     }
 
     const data: TCreateCategoryInput = {
-      name: normalizeName(name)
+      name: normalizedName
     }
     return this.categoryRepository.create(data, userId);
   }
