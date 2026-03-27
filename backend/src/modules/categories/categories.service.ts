@@ -4,6 +4,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { TCategory } from './entities/category.entity';
 import type { ICategoryRepository, TCreateCategoryInput } from './repositories/category.repository';
 import { CATEGORY_REPOSITORY } from './repositories/category-token';
+import { normalizeName } from 'src/common/utils/normalize.util';
 
 @Injectable()
 export class CategoriesService {
@@ -15,14 +16,16 @@ export class CategoriesService {
   async create(dto: CreateCategoryDto, userId: string): Promise<TCategory> {
     const { name } = dto;
 
-    const existing = await this.categoryRepository.findByNameAndUserId(name, userId)
+    const normalizedName = normalizeName(name)
+
+    const existing = await this.categoryRepository.findByNameAndUserId(normalizedName, userId)
 
     if (existing) {
-      throw new ConflictException('Category name already exists')
+      throw new ConflictException(normalizedName + ' already exists')
     }
 
     const data: TCreateCategoryInput = {
-      name: dto.name.trim().charAt(0).toUpperCase() + dto.name.trim().slice(1)
+      name: normalizeName(name)
     }
     return this.categoryRepository.create(data, userId);
   }
