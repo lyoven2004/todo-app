@@ -1,14 +1,16 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { format } from "date-fns"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { format } from "date-fns"
 import { Calendar, Check, ChevronDown, Plus } from "lucide-react"
+import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import {
   TTaskCategoryDto,
   TTaskFormValues,
+  TTaskPriority,
+  TTaskStatus,
   taskFormSchema,
 } from "@/app/tasks/_config/task.schema"
 import {
@@ -60,18 +62,19 @@ type TTaskFormProps = {
   onSubmit: (values: TTaskFormValues) => void
   onCancel?: () => void
   onAddCategory?: (name: string) => void
-  submitLabel?: string
   hideFooter?: boolean
+  formId: string
 }
 
-function StatusValue({ status }: { status: TTaskFormValues["status"] }) {
+function StatusValue({ status }
+  : { status: TTaskStatus }) {
   const Icon = STATUS_ICONS[status]
-  const option = TASK_STATUS_OPTIONS.find((item) => item.value === status)
+  const config = STATUS_UI_CONFIG[status]
 
   return (
-    <span className="flex items-center gap-2">
-      <Icon className="size-4" />
-      <span>{option?.label ?? status}</span>
+    <span className="flex w-full items-center gap-2">
+      <Icon className={cn("size-4 shrink-0", config.iconClassName)} />
+      <span>{status}</span>
     </span>
   )
 }
@@ -79,7 +82,7 @@ function StatusValue({ status }: { status: TTaskFormValues["status"] }) {
 function PriorityValue({
   priority,
 }: {
-  priority: TTaskFormValues["priority"]
+  priority: TTaskPriority
 }) {
   const option = PRIORITY_OPTIONS.find((item) => item.value === priority)
   const config = PRIORITY_CONFIG[priority]
@@ -98,7 +101,7 @@ export function TaskForm({
   onSubmit,
   onCancel,
   onAddCategory,
-  hideFooter = false,
+  formId,
 }: TTaskFormProps) {
   const [categoryPopoverOpen, setCategoryPopoverOpen] = useState(false)
   const [datePopoverOpen, setDatePopoverOpen] = useState(false)
@@ -111,13 +114,13 @@ export function TaskForm({
       description: defaultValues?.description ?? "",
       status: defaultValues?.status ?? "NOT_STARTED",
       priority: defaultValues?.priority ?? "MEDIUM",
-      dueDate: defaultValues?.dueDate ?? "",
+      expiredAt: defaultValues?.expiredAt ?? "",
       category: defaultValues?.category ?? "",
     },
   })
 
   const selectedCategoryId = form.watch("category")
-  const selectedDate = form.watch("dueDate")
+  const selectedDate = form.watch("expiredAt")
 
   const selectedCategory = useMemo(
     () => categories.find((item) => item.id === selectedCategoryId),
@@ -135,7 +138,7 @@ export function TaskForm({
   return (
     <Form {...form}>
       <form
-        id="task-form"
+        id={formId}
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6"
       >
@@ -323,25 +326,19 @@ export function TaskForm({
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="h-10 bg-background hover:bg-muted/50">
+                        <SelectTrigger className="!h-10 mb-0 w-full bg-background hover:bg-muted/50">
                           <SelectValue>
-                            <PriorityValue priority={field.value} />
+                            {typeof field.value === "string" ? (
+                              <PriorityValue priority={field.value} />
+                            ) : null}
                           </SelectValue>
                         </SelectTrigger>
                       </FormControl>
 
                       <SelectContent>
                         {PRIORITY_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            <span className="flex items-center gap-2">
-                              <span
-                                className={cn(
-                                  "size-2 rounded-full",
-                                  option.dotClassName
-                                )}
-                              />
-                              <span>{option.label}</span>
-                            </span>
+                          <SelectItem key={option.value} value={option.value} textValue={option.label}>
+                            <PriorityValue priority={option.value} />
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -356,7 +353,7 @@ export function TaskForm({
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="dueDate"
+                name="expiredAt"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-xs font-medium text-muted-foreground">
@@ -420,27 +417,21 @@ export function TaskForm({
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="h-10 bg-background hover:bg-muted/50">
-                          <SelectValue>
-                            <StatusValue status={field.value} />
+                        <SelectTrigger className="!h-10 mb-0 w-full bg-background hover:bg-muted/50">
+                          <SelectValue className="mr-2 size-4 text-muted-foreground">
+                            {typeof field.value === "string" ? (
+                              <StatusValue status={field.value as TTaskStatus} />
+                            ) : <span className="text-muted-foreground">Select status</span>}
                           </SelectValue>
                         </SelectTrigger>
                       </FormControl>
 
                       <SelectContent>
-                        {TASK_STATUS_OPTIONS.map((option) => {
-                          const Icon = STATUS_ICONS[option.value]
-                          const config = STATUS_UI_CONFIG[option.value]
-
-                          return (
-                            <SelectItem key={option.value} value={option.value}>
-                              <span className="flex items-center gap-2">
-                                <Icon className={cn("size-4", config.iconClassName)} />
-                                <span>{option.label}</span>
-                              </span>
-                            </SelectItem>
-                          )
-                        })}
+                        {TASK_STATUS_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value} textValue={option.label}>
+                            <StatusValue status={option.value} />
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
 
@@ -451,18 +442,6 @@ export function TaskForm({
             </div>
           </div>
         </div>
-
-        {!hideFooter && (
-          <div className="flex items-center justify-end gap-3">
-            {onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel}>
-                Cancel
-              </Button>
-            )}
-            <Button type="submit">
-            </Button>
-          </div>
-        )}
       </form>
     </Form>
   )

@@ -6,7 +6,7 @@ import { toast } from "sonner"
 import { useDebounce } from "../hooks/use-debounce"
 import { TaskBoard } from "./_components/task-holder/task-board"
 import { Toolbar } from "./_components/toolbar"
-import { TTaskFormValues, TTaskItemDto, TTaskPriority, TTaskSortBy, TTaskStatus } from "./_config/task.schema"
+import { TTaskFormMode, TTaskFormValues, TTaskItemDto, TTaskPriority, TTaskSortBy, TTaskStatus } from "./_config/task.schema"
 import { TaskFormModal } from "./_components/task-form/task-form-modal"
 
 export default function TaskPage() {
@@ -17,34 +17,33 @@ export default function TaskPage() {
     const [priorityFilter, setPriorityFilter] = useState<TTaskPriority | null>(null)
     const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
     const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
-    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-    // const [editingTask, setEditingTask] = useState<TTaskItemDto | null>(null)
-    const [taskData, setTaskData] = useState<any>()
-    const [mode, setMode] = useState<'create' | 'edit'>('create')
+    const [isOpen, setIsOpen] = useState(false)
+    const [taskData, setTaskData] = useState<TTaskItemDto>({} as TTaskItemDto)
+    const [mode, setMode] = useState<TTaskFormMode>('create')
 
-    const handleOpenCreateTask = (status?: string) => {
+    const handleOpenCreateTask = (status?: TTaskStatus) => {
         setTaskData({
+            id: "",
             title: "",
             description: "",
-            status,
-            priority: "MEDIUM",
-            dueDate: "",
-            category: "",
+            status: status || 'NOT_STARTED',
+            priority: "LOW",
+            expiredAt: "",
+            categoryId: "",
         })
-        setIsCreateDialogOpen(true)
+        setIsOpen(true)
         setMode('create')
     }
 
     const handleOpenEditTask = (task: TTaskItemDto) => {
-        setIsCreateDialogOpen(true)
+        setIsOpen(true)
         setTaskData(task)
         setMode('edit')
     }
 
     const handleCloseTaskModal = () => {
-        setIsCreateDialogOpen(false)
-        // setEditingTask(null)
-        setTaskData(null)
+        setIsOpen(false)
+        setTaskData({} as TTaskItemDto)
     }
 
     return (
@@ -111,7 +110,7 @@ export default function TaskPage() {
 
                 <TaskFormModal
                     mode={mode}
-                    open={isCreateDialogOpen}
+                    open={isOpen}
                     onOpenChange={(open) => {
                         if (!open) handleCloseTaskModal()
                     }}

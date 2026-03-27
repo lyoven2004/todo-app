@@ -1,24 +1,14 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
-import { getTokenFromCookie } from "./auth-cookie";
+import { clearAuthCookies, getTokenFromCookie } from "./auth-cookie";
+import { TApiErrorResponse } from "@/types/api.response";
 
 export class ApiError extends Error {
   status?: number
-  code?: string
-  field?: string
 
-  constructor(
-    message: string,
-    options?: {
-      status?: number
-      code?: string
-      field?: string
-    },
-  ) {
+  constructor(message: string, options?: { status?: number }) {
     super(message)
     this.name = "ApiError"
     this.status = options?.status
-    this.code = options?.code
-    this.field = options?.field
   }
 }
 
@@ -36,19 +26,30 @@ function createApiClient(): AxiosInstance {
 
   instance.interceptors.response.use(
     (response) => response,
-    (error: AxiosError<any>) => {
+    (error: AxiosError<TApiErrorResponse>) => {
       const res = error.response
+      const backendMessage = res?.data?.message
+
+      if (res?.status === 401) {
+          if (typeof window !== "undefined") {
+            clearAuthCookies()
+            window.location.href = "/login"
+          }
+
+          return Promise.reject(new ApiError("Session expired", { status: 401 }))
+      }
+
+      const message = Array.isArray(backendMessage)
+        ? backendMessage.join(", ")
+        : backendMessage || error.message || "Something went wrong"
 
       return Promise.reject(
-        new ApiError(res?.data?.message || error.message || "Something went wrong", {
-          status: res?.status,
-          code: res?.data?.code,
-          field: res?.data?.field,
+        new ApiError(message, {
+          status: res?.status ?? res?.data?.statusCode,
         }),
       )
     },
   )
-
   return instance
 }
 

@@ -77,6 +77,7 @@ export function TaskColumn({
   })
 
   const tasks = taskListData?.pages.flatMap(data => data.data) ?? []
+  const total = taskListData?.pages?.[0]?.total ?? 0
   const hasTasks = tasks.length > 0
 
   const handleScroll = useCallback(
@@ -116,7 +117,7 @@ export function TaskColumn({
               config.badgeClassName
             )}
           >
-            {tasks.length}
+            {total}
           </span>
         </div>
 

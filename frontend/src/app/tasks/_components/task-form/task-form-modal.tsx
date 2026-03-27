@@ -1,15 +1,15 @@
 "use client"
 
-import { useMemo, useState } from "react"
 import { Trash2 } from "lucide-react"
+import { useId, useState } from "react"
 
 import {
     TTaskCategoryDto,
+    TTaskFormMode,
     TTaskFormValues,
     TTaskItemDto,
 } from "@/app/tasks/_config/task.schema"
 
-import { Button } from "@/components/ui/button"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -20,6 +20,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
 import {
     Dialog,
     DialogContent,
@@ -29,11 +30,11 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 
-import { TaskForm } from "./task-form"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { createTask, deleteTask, updateTask } from "@/axios/task-api"
-
-export type TTaskFormMode = "create" | "edit"
+import { TASK_FORM_CONFIG } from "@/constants/task"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { TaskForm } from "./task-form"
+import { handleMutationError } from "@/utils/get-error-message"
 
 type TTaskFormModalProps = {
     mode: TTaskFormMode
@@ -54,43 +55,19 @@ export function TaskFormModal({
 }: TTaskFormModalProps) {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
-    // const defaultValues = useMemo<Partial<TTaskFormValues>>(() => {
-    //     if (task) {
-    //         return {
-    //             title: task.title,
-    //             description: task.description ?? "",
-    //             status: task.status,
-    //             priority: task.priority,
-    //             dueDate: task.expiredAt ?? "",
-    //             category: task.categoryId ?? "",
-    //         }
-    //     }
-
-    //     return {
-    //         title: "",
-    //         description: "",
-    //         status: "NOT_STARTED",
-    //         priority: "MEDIUM",
-    //         dueDate: "",
-    //         category: "",
-    //     }
-    // }, [mode, task])
-
-    const title = mode === "create" ? "Create Task" : "Edit Task"
-    const description =
-        mode === "create"
-            ? "Add a new task with all the important details."
-            : "Update the details for this task."
+    const { title, description } = TASK_FORM_CONFIG[mode]
 
     const handleClose = () => onOpenChange(false)
 
     const queryClient = useQueryClient()
+
     const createTaskMutation = useMutation({
         mutationFn: createTask,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["tasks"] })
             onOpenChange(false)
         },
+        onError: handleMutationError
     })
 
     const updateTaskMutation = useMutation({
@@ -105,14 +82,16 @@ export function TaskFormModal({
             queryClient.invalidateQueries({ queryKey: ["tasks"] })
             onOpenChange(false)
         },
+        onError: handleMutationError
     })
 
     const deleteTaskMutation = useMutation({
         mutationFn: deleteTask,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["tasks"] })
+            queryClient.invalidateQueries({ queryKey: ["tasks", status] })
             onOpenChange(false)
         },
+        onError: handleMutationError
     })
 
     const handleDelete = () => {
@@ -123,11 +102,9 @@ export function TaskFormModal({
 
     const handleSubmit = (values: TTaskFormValues) => {
         const payload = {
-            title: values.title,
+            ...values,
             description: values.description || null,
-            status: values.status,
-            priority: values.priority,
-            expiredAt: values.dueDate || null,
+            expiredAt: values.expiredAt || null,
             categoryId: values.category || null,
         }
 
@@ -136,14 +113,11 @@ export function TaskFormModal({
             return
         }
 
-        if (!task) return
-
         updateTaskMutation.mutate({
             taskId: task.id,
             data: payload,
         })
     }
-
 
     const isSubmitting =
         createTaskMutation.isPending || updateTaskMutation.isPending
@@ -156,6 +130,8 @@ export function TaskFormModal({
             : updateTaskMutation.isPending
                 ? "Saving changes..."
                 : "Save Changes"
+
+    const formId = useId()
 
     return (
         <>
@@ -177,14 +153,14 @@ export function TaskFormModal({
                             onSubmit={handleSubmit}
                             onCancel={handleClose}
                             onAddCategory={onAddCategory}
-                            submitLabel={submitLabel}
+                            formId={formId}
                             hideFooter
                         />
                     </div>
 
                     <DialogFooter className="flex-row justify-end border-t border-border/50 bg-muted/30 px-6 py-4 flex items-center h-full mx-0">
                         <div>
-                            {mode === "edit" && task && (
+                            {mode === "edit" && (
                                 <Button
                                     type="button"
                                     variant="ghost"
@@ -210,7 +186,7 @@ export function TaskFormModal({
 
                             <Button
                                 type="submit"
-                                form="task-form"
+                                form={formId}
                                 disabled={isSubmitting}
                                 className="px-5"
                             >
@@ -221,7 +197,7 @@ export function TaskFormModal({
                 </DialogContent>
             </Dialog>
 
-            {task && (
+            {mode === 'edit' && (
                 <AlertDialog
                     open={showDeleteConfirm}
                     onOpenChange={setShowDeleteConfirm}

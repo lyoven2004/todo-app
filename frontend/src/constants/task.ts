@@ -109,3 +109,15 @@ export const PRIORITY_CONFIG: Record<
             "border-border bg-muted text-muted-foreground",
     },
 }
+
+export const TASK_FORM_CONFIG = {
+  create: {
+    title: "Create Task",
+    description: "Add a new task with all the important details.",
+  },
+  edit: {
+    title: "Edit Task",
+    description: "Update the details for this task.",
+  },
+} as const
+
