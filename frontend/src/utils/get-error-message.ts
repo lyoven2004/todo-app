@@ -1,3 +1,6 @@
+import { ApiError } from "@/lib/axios";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function getAuthErrorMessage(code?: string) {
     switch (code) {
@@ -23,4 +26,24 @@ export function getRegisterErrorMessage(code?: string) {
         default:
             return "Unable to create account. Please try again."
     }
+}
+
+export function getErrorMessage(error: unknown): string {
+    if (error instanceof ApiError) {
+        return error.message
+    }
+
+    if (error instanceof Error) {
+        return error.message
+    }
+
+    if (typeof error === "string") {
+        return error
+    }
+
+    return "Something went wrong"
+}
+
+export function handleMutationError(error: unknown) {
+    toast.error(getErrorMessage(error))
 }

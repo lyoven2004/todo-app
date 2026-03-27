@@ -6,7 +6,8 @@ import { toast } from "sonner"
 import { useDebounce } from "../hooks/use-debounce"
 import { TaskBoard } from "./_components/task-holder/task-board"
 import { Toolbar } from "./_components/toolbar"
-import { TTaskPriority, TTaskSortBy, TTaskStatus } from "./_config/task.schema"
+import { TTaskFormMode, TTaskFormValues, TTaskItemDto, TTaskPriority, TTaskSortBy, TTaskStatus } from "./_config/task.schema"
+import { TaskFormModal } from "./_components/task-form/task-form-modal"
 
 export default function TaskPage() {
 
@@ -16,7 +17,34 @@ export default function TaskPage() {
     const [priorityFilter, setPriorityFilter] = useState<TTaskPriority | null>(null)
     const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
     const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
-    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+    const [isOpen, setIsOpen] = useState(false)
+    const [taskData, setTaskData] = useState<TTaskItemDto>({} as TTaskItemDto)
+    const [mode, setMode] = useState<TTaskFormMode>('create')
+
+    const handleOpenCreateTask = (status?: TTaskStatus) => {
+        setTaskData({
+            id: "",
+            title: "",
+            description: "",
+            status: status || 'NOT_STARTED',
+            priority: "LOW",
+            expiredAt: "",
+            categoryId: "",
+        })
+        setIsOpen(true)
+        setMode('create')
+    }
+
+    const handleOpenEditTask = (task: TTaskItemDto) => {
+        setIsOpen(true)
+        setTaskData(task)
+        setMode('edit')
+    }
+
+    const handleCloseTaskModal = () => {
+        setIsOpen(false)
+        setTaskData({} as TTaskItemDto)
+    }
 
     return (
         <main className="min-h-screen bg-primary">
@@ -62,7 +90,7 @@ export default function TaskPage() {
                         onCategoryFilterChange={setCategoryFilter}
                         sortBy={sortBy}
                         onSortChange={setSortBy}
-                        onAddTask={() => setIsCreateDialogOpen(true)}
+                        onAddTask={handleOpenCreateTask}
                     />
                 </section>
 
@@ -73,15 +101,26 @@ export default function TaskPage() {
                     categoryFilter={categoryFilter}
                     sortBy={sortBy}
                     onAddTask={(status) => {
-                        toast.message(`Add task to ${status}`)
-                        setIsCreateDialogOpen(true)
+                        handleOpenCreateTask(status)
                     }}
-                    onEditTask={(task) => console.log("edit", task)}
+                    onEditTask={handleOpenEditTask}
                     onDeleteTask={(id) => console.log("delete", id)}
                     onDuplicateTask={(task) => console.log("duplicate", task)}
                 />
+
+                <TaskFormModal
+                    mode={mode}
+                    open={isOpen}
+                    onOpenChange={(open) => {
+                        if (!open) handleCloseTaskModal()
+                    }}
+                    task={taskData}
+                    categories={[]}
+                />
+
             </div>
 
         </main>
     )
 }
+

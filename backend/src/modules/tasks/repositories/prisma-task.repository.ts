@@ -128,6 +128,7 @@ export class PrismaTaskRepository implements ITaskRepository {
 
         return {
             page,
+            total,
             totalPage: Math.ceil(total / limit),
             data: tasks.map((task) => this.toDomain(task)),
         };

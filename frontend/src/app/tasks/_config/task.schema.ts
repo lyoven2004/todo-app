@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { nullable, z } from "zod"
 
 export const taskSortBySchema = z.enum([
   "newest",
@@ -26,6 +26,15 @@ export const taskCategorySchema = z.object({
   color: z.string().optional(),
 })
 
+export const taskFormSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().nullable().optional(),
+  status: taskStatusSchema,
+  priority: taskPrioritySchema,
+  expiredAt: z.string().nullable().optional(),
+  category: z.string().nullable().optional(),
+})
+
 export const taskItemSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -34,8 +43,6 @@ export const taskItemSchema = z.object({
   priority: taskPrioritySchema,
   categoryId: z.string().nullable().optional(),
   expiredAt: z.string().nullable().optional(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
 })
 
 export const getTaskListRequestSchema = z.object({
@@ -51,6 +58,7 @@ export const getTaskListRequestSchema = z.object({
 
 export const getTaskListResponseSchema = z.object({
   data: z.array(taskItemSchema),
+  total: z.number(),
   totalPage: z.number(),
   page: z.number(),
   limit: z.number(),
@@ -60,6 +68,7 @@ export const getTaskDetailResponseSchema = taskItemSchema
 
 export const getCategoryListResponseSchema = z.array(taskCategorySchema)
 
+export type TTaskFormMode = "create" | "edit"
 export type TTaskSortBy= z.infer<typeof taskSortBySchema>
 export type TTaskStatus = z.infer<typeof taskStatusSchema>
 export type TTaskPriority = z.infer<typeof taskPrioritySchema>
@@ -69,3 +78,4 @@ export type TGetTaskListRequestDto = z.infer<typeof getTaskListRequestSchema>
 export type TGetTaskListResponseDto = z.infer<typeof getTaskListResponseSchema>
 export type TGetTaskDetailResponseDto = z.infer<typeof getTaskDetailResponseSchema>
 export type TGetCategoryListResponseDto = z.infer<typeof getCategoryListResponseSchema>
+export type TTaskFormValues = z.infer<typeof taskFormSchema>

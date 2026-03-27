@@ -51,7 +51,7 @@ export function TaskBoard({
                 onAddTask={() => onAddTask?.(value)}
                 onEditTask={onEditTask}
                 onDeleteTask={onDeleteTask}
-                onDuplicateTask={onDuplicateTask}
+                onDuplicateTask={onDuplicateTask}                
               />
             )
             )}

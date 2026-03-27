@@ -196,7 +196,7 @@ export function Toolbar({
                 <Button
                     size="sm"
                     onClick={onAddTask}
-                    className="h-10 rounded-xl px-4"
+                    className="h-10 rounded-xl px-4 background-sidebar-primary"
                 >
                     <Plus className="size-4" />
                     <span className="ml-2 hidden sm:inline">Add Task</span>
