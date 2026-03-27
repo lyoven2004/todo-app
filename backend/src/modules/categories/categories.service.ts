@@ -1,11 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { TCategory } from './entities/category.entity';
+import type { ICategoryRepository, TCreateCategoryInput } from './repositories/category.repository';
+import { CATEGORY_REPOSITORY } from './repositories/category-token';
+import { normalizeName } from 'src/common/utils/normalize.util';
 
 @Injectable()
 export class CategoriesService {
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  constructor(
+    @Inject(CATEGORY_REPOSITORY)
+    private categoryRepository: ICategoryRepository
+  ) { }
+
+  async create(dto: CreateCategoryDto, userId: string): Promise<TCategory> {
+    const { name } = dto;
+
+    const normalizedName = normalizeName(name);
+
+    const existing = await this.categoryRepository.findByNameAndUserId(normalizedName, userId)
+
+    if (existing) {
+      throw new ConflictException(normalizedName + ' already exists')
+    }
+
+    const data: TCreateCategoryInput = {
+      name: normalizedName
+    }
+    return this.categoryRepository.create(data, userId);
   }
 
   findAll() {
