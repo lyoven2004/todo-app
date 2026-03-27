@@ -272,12 +272,6 @@ export function TaskForm({
                                   className="flex items-center justify-between"
                                 >
                                   <span className="flex items-center gap-2">
-                                    <span
-                                      className={cn(
-                                        "size-2.5 rounded-full",
-                                        category.color?.split(" ")[0]
-                                      )}
-                                    />
                                     {category.name}
                                   </span>
 
@@ -328,9 +322,7 @@ export function TaskForm({
                       <FormControl>
                         <SelectTrigger className="!h-10 mb-0 w-full bg-background hover:bg-muted/50">
                           <SelectValue>
-                            {typeof field.value === "string" ? (
-                              <PriorityValue priority={field.value} />
-                            ) : null}
+                            {field.value && <PriorityValue priority={field.value} />}
                           </SelectValue>
                         </SelectTrigger>
                       </FormControl>

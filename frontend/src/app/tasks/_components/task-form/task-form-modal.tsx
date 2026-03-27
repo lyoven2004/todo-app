@@ -95,7 +95,6 @@ export function TaskFormModal({
     })
 
     const handleDelete = () => {
-        if (!task) return
         setShowDeleteConfirm(false)
         deleteTaskMutation.mutate(task.id)
     }
