@@ -1,11 +1,10 @@
-import { ConflictException, Inject, Injectable } from '@nestjs/common';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
-import { TCategory } from './entities/category.entity';
-import type { ICategoryRepository, TCreateCategoryInput } from './repositories/category.repository';
-import { CATEGORY_REPOSITORY } from './repositories/category-token';
+import { BadRequestException, ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { normalizeName } from 'src/common/utils/normalize.util';
+import { CreateCategoryDto } from './dto/create-category.dto';
 import { QueryCategoryDto } from './dto/query-category.dto';
+import { TCategory } from './entities/category.entity';
+import { CATEGORY_REPOSITORY } from './repositories/category-token';
+import type { ICategoryRepository, TCreateCategoryInput } from './repositories/category.repository';
 
 @Injectable()
 export class CategoriesService {
@@ -31,19 +30,25 @@ export class CategoriesService {
     return this.categoryRepository.create(data, userId);
   }
 
-  findAll(userId: string, query: QueryCategoryDto) {
+  async findAll(userId: string, query: QueryCategoryDto) {
     return this.categoryRepository.findAllByUserId(userId, query);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
-  }
+  async delete(id: string, userId: string): Promise<{ message: string }> {
+    const category = await this.categoryRepository.findByIdAndUserId(id, userId);
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
-  }
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+    try {
+      await this.categoryRepository.delete(id);
+
+      return {
+        message: 'Category deleted successfully',
+      };
+    } catch (error) {
+      throw new BadRequestException('Delete failed');
+    }
   }
 }

@@ -19,4 +19,5 @@ export interface ICategoryRepository {
         : Promise<TCategory | null>;
     findAllByUserId(userId: string, query: TQueryCategory)
         : Promise<TPaginationResult<TCategory>>
+    delete(id: string): Promise<void>;
 }

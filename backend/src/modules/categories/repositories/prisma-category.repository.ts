@@ -93,4 +93,10 @@ export class PrismaCategoryRepository implements ICategoryRepository {
             data: categories
         }
     }
+
+    async delete(id: string): Promise<void> {
+        await this.prisma.category.delete({
+            where: { id },
+        });
+    }
 }
