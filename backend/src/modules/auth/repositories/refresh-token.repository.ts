@@ -11,4 +11,6 @@ export interface IRefreshRepository {
   findById(id: string): Promise<TRefreshToken | null>;
   findByUserId(userId: string): Promise<TRefreshToken[]>;
   revoke(id: string): Promise<TRefreshToken>;
+  findByToken(token: string): Promise<TRefreshToken | null>;
+  update(id: string, data: Partial<TRefreshToken>): Promise<TRefreshToken>;
 }
