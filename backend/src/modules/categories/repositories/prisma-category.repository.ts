@@ -1,7 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { ICategoryRepository, TCreateCategoryInput } from "./category.repository";
+import { ICategoryRepository, TCreateCategoryInput, TQueryCategory } from "./category.repository";
 import { PrismaService } from "prisma/prisma.service";
 import { TCategory } from "../entities/category.entity";
+import { Prisma } from "@prisma/client";
+import { TPaginationResult } from "src/common/types/pagination.type";
+import { normalize } from "path";
+import { normalizeName } from "src/common/utils/normalize.util";
+import { DEFAULT_LIMIT, DEFAULT_PAGE } from "src/common/constants/pagination.constant";
 
 @Injectable()
 export class PrismaCategoryRepository implements ICategoryRepository {
@@ -38,5 +43,54 @@ export class PrismaCategoryRepository implements ICategoryRepository {
         });
 
         return category ? category : null;
+    }
+
+    async findAllByUserId(
+        userId: string,
+        query: TQueryCategory,
+    ): Promise<TPaginationResult<TCategory>> {
+
+        const {
+            search,
+            page =  DEFAULT_PAGE,
+            limit = DEFAULT_LIMIT,
+        } = query;
+
+        const normalizedSearch = normalizeName(search || "");
+        const skip = (page - 1) * limit;
+
+        const where: Prisma.CategoryWhereInput = {
+            userId,
+            ...(normalizedSearch
+                ? {
+                    name: {
+                        contains: normalizedSearch,
+                        mode: "insensitive",
+                    },
+                }
+                : {}),
+        }
+
+        const [categories, total] = await Promise.all([
+            this.prisma.category.findMany({
+                where,
+                orderBy: {
+                    createdAt: "desc",
+                },
+                skip,
+                take: limit,
+            }),
+
+            this.prisma.category.count({
+                where
+            }),
+        ]);
+
+        return {
+            page,
+            total,
+            totalPage: Math.ceil(total / limit),
+            data: categories
+        }
     }
 }

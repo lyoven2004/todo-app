@@ -9,6 +9,7 @@ import { PrismaService } from "prisma/prisma.service";
 import { ITaskRepository, TCreateTaskInput, TQueryTask, TUpdateTaskInput } from "./task.repository";
 import { TaskPriority, TaskStatus, TTask } from "../entities/task.entity";
 import { TPaginationResult } from "src/common/types/pagination.type";
+import { DEFAULT_LIMIT, DEFAULT_PAGE } from "src/common/constants/pagination.constant";
 
 @Injectable()
 export class PrismaTaskRepository implements ITaskRepository {
@@ -79,8 +80,8 @@ export class PrismaTaskRepository implements ITaskRepository {
             categoryId,
             sortBy = 'createdAt',
             sortOrder = 'desc',
-            page = 1,
-            limit = 10,
+            page = DEFAULT_PAGE,
+            limit = DEFAULT_LIMIT,
         } = query;
 
         const normalizedSearch = search?.trim()
