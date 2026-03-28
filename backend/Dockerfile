@@ -23,5 +23,5 @@ COPY --from=builder --chown=app:app-group /app/prisma/migrations ./prisma/migrat
 COPY --from=builder --chown=app:app-group /app/node_modules ./node_modules
 
 USER app
-EXPOSE 8000
+EXPOSE 5000
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main.js"]
