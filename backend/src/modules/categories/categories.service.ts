@@ -1,11 +1,10 @@
 import { BadRequestException, ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
-import { TCategory } from './entities/category.entity';
-import type { ICategoryRepository, TCreateCategoryInput } from './repositories/category.repository';
-import { CATEGORY_REPOSITORY } from './repositories/category-token';
 import { normalizeName } from 'src/common/utils/normalize.util';
+import { CreateCategoryDto } from './dto/create-category.dto';
 import { QueryCategoryDto } from './dto/query-category.dto';
+import { TCategory } from './entities/category.entity';
+import { CATEGORY_REPOSITORY } from './repositories/category-token';
+import type { ICategoryRepository, TCreateCategoryInput } from './repositories/category.repository';
 
 @Injectable()
 export class CategoriesService {
@@ -36,9 +35,9 @@ export class CategoriesService {
   }
 
   async delete(id: string, userId: string): Promise<{ message: string }> {
-    const task = await this.categoryRepository.findByIdAndUserId(id, userId);
+    const category = await this.categoryRepository.findByIdAndUserId(id, userId);
 
-    if (!task) {
+    if (!category) {
       throw new NotFoundException('Category not found');
     }
 
