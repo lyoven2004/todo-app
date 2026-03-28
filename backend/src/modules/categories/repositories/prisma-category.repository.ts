@@ -6,6 +6,7 @@ import { Prisma } from "@prisma/client";
 import { TPaginationResult } from "src/common/types/pagination.type";
 import { normalize } from "path";
 import { normalizeName } from "src/common/utils/normalize.util";
+import { DEFAULT_LIMIT, DEFAULT_PAGE } from "src/common/constants/pagination.constant";
 
 @Injectable()
 export class PrismaCategoryRepository implements ICategoryRepository {
@@ -51,8 +52,8 @@ export class PrismaCategoryRepository implements ICategoryRepository {
 
         const {
             search,
-            page = 1,
-            limit = 10,
+            page =  DEFAULT_PAGE,
+            limit = DEFAULT_LIMIT,
         } = query;
 
         const normalizedSearch = normalizeName(search || "");
