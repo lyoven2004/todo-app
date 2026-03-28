@@ -8,9 +8,9 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { TaskPriority, TaskStatus } from '../entities/task.entity';
-import { QueryDto } from 'src/common/dto/query.dto';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
-export class QueryTasksDto extends QueryDto{
+export class QueryTasksDto extends PaginationQueryDto {
   @IsEnum(TaskStatus)
   @IsOptional()
   status?: TaskStatus;
