@@ -56,7 +56,7 @@ export function RegisterForm() {
     },
     onError: (error) => {
       toast.error("Sign up failed", {
-        description: getRegisterErrorMessage(error.code),
+        description: getRegisterErrorMessage(error.message),
       })
     },
   })
