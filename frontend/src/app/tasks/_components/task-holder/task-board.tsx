@@ -3,7 +3,8 @@
 import { TASK_STATUS_OPTIONS } from "@/constants/task"
 import { cn } from "@/lib/utils"
 import { TaskColumn } from "./task-column"
-import { TTaskCategoryDto, TTaskItemDto, TTaskPriority, TTaskSortBy, TTaskStatus } from "../../_config/task.schema"
+import { TTaskItemDto, TTaskPriority, TTaskSortBy, TTaskStatus } from "../../_config/task.schema"
+import { TCategoryDto } from "@/app/categories/_config/category.schema"
 
 type TTaskBoardProps = {
   searchQuery: string
@@ -13,7 +14,7 @@ type TTaskBoardProps = {
   categoryFilter: string | null
   sortBy: TTaskSortBy
 
-  categories?: TTaskCategoryDto[]
+  categories?: TCategoryDto[]
   onAddTask?: (status: TTaskStatus) => void
   onEditTask?: (task: TTaskItemDto) => void
   onDeleteTask?: (taskId: string) => void

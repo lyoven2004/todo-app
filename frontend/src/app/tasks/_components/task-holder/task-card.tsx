@@ -1,56 +1,37 @@
 "use client"
 
-import { CalendarDays, MoreHorizontal, Pencil, Trash2, Copy } from "lucide-react"
+import { CalendarDays } from "lucide-react"
 
+import { TCategoryDto } from "@/app/categories/_config/category.schema"
+import { useCategories } from "@/app/categories/_hooks/category.hook"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { cn } from "@/lib/utils"
 import { PRIORITY_CONFIG } from "@/constants/task"
 import { formatDate } from "@/lib/date"
-import { TTaskCategoryDto, TTaskItemDto } from "../../_config/task.schema"
+import { cn } from "@/lib/utils"
+import { useMemo } from "react"
+import { TTaskItemDto } from "../../_config/task.schema"
 
 type TTaskCardProps = {
   task: TTaskItemDto
-  categories?: TTaskCategoryDto[]
+  categories?: TCategoryDto[]
   onEdit?: (task: TTaskItemDto) => void
   onDelete?: (taskId: string) => void
   onDuplicate?: (task: TTaskItemDto) => void
 }
 
-function getCategoryBadgeClass(color?: string) {
-  switch (color) {
-    case "blue":
-      return "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300"
-    case "green":
-      return "border-green-200 bg-green-50 text-green-700 dark:border-green-900 dark:bg-green-950/40 dark:text-green-300"
-    case "red":
-      return "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300"
-    case "yellow":
-      return "border-yellow-200 bg-yellow-50 text-yellow-700 dark:border-yellow-900 dark:bg-yellow-950/40 dark:text-yellow-300"
-    case "purple":
-      return "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-900 dark:bg-purple-950/40 dark:text-purple-300"
-    default:
-      return "border-border bg-muted text-muted-foreground"
-  }
-}
-
 export function TaskCard({
   task,
-  categories = [],
   onEdit,
-  onDelete,
-  onDuplicate,
 }: TTaskCardProps) {
   const priorityConfig = PRIORITY_CONFIG[task.priority]
-  const category = categories.find((data) => data.id === task.categoryId)
+  const { categories } = useCategories()
   const dueDate = formatDate(task.expiredAt)
+
+  const categoryMap = useMemo(() => {
+    return Object.fromEntries(categories.map(c => [c.id, c]))
+  }, [categories])
+
+  const category = categoryMap[task.categoryId || ""]
 
   return (
     <div
@@ -89,8 +70,7 @@ export function TaskCard({
               <Badge
                 variant="outline"
                 className={cn(
-                  "h-5 border px-2 py-0 text-[10px] font-medium",
-                  getCategoryBadgeClass(category.color)
+                  "h-5 border px-2 py-0 text-[10px] font-medium border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-900 dark:bg-purple-950/40 dark:text-purple-300",
                 )}
               >
                 {category.name}

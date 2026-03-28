@@ -2,12 +2,11 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
-import { Calendar, Check, ChevronDown, Plus } from "lucide-react"
+import { Calendar, Check, ChevronDown, Plus, Trash2 } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import {
-  TTaskCategoryDto,
   TTaskFormValues,
   TTaskPriority,
   TTaskStatus,
@@ -55,13 +54,15 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
+import { TCategoryDto } from "@/app/categories/_config/category.schema"
 
 type TTaskFormProps = {
   defaultValues?: Partial<TTaskFormValues>
-  categories: TTaskCategoryDto[]
+  categories: TCategoryDto[]
   onSubmit: (values: TTaskFormValues) => void
   onCancel?: () => void
   onAddCategory?: (name: string) => void
+  onDeleteCategory?: (categoryId: string) => void
   hideFooter?: boolean
   formId: string
 }
@@ -99,8 +100,8 @@ export function TaskForm({
   defaultValues,
   categories,
   onSubmit,
-  onCancel,
   onAddCategory,
+  onDeleteCategory,
   formId,
 }: TTaskFormProps) {
   const [categoryPopoverOpen, setCategoryPopoverOpen] = useState(false)
@@ -115,11 +116,11 @@ export function TaskForm({
       status: defaultValues?.status ?? "NOT_STARTED",
       priority: defaultValues?.priority ?? "MEDIUM",
       expiredAt: defaultValues?.expiredAt ?? "",
-      category: defaultValues?.category ?? "",
+      categoryId: defaultValues?.categoryId ?? "",
     },
   })
 
-  const selectedCategoryId = form.watch("category")
+  const selectedCategoryId = form.watch("categoryId")
   const selectedDate = form.watch("expiredAt")
 
   const selectedCategory = useMemo(
@@ -198,7 +199,7 @@ export function TaskForm({
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="category"
+                name="categoryId"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <FormLabel className="text-xs font-medium text-muted-foreground">
@@ -263,11 +264,30 @@ export function TaskForm({
                                     field.onChange(category.id)
                                     setCategoryPopoverOpen(false)
                                   }}
-                                  className="flex items-center justify-between"
+                                  className="group flex items-center justify-between"
                                 >
-                                  <span className="flex items-center gap-2">
+                                  <span
+                                    onClick={() => {
+                                      field.onChange(category.id)
+                                      setCategoryPopoverOpen(false)
+                                    }}
+                                    className="flex-1 cursor-pointer"
+                                  >
                                     {category.name}
                                   </span>
+
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      onDeleteCategory?.(category.id)
+                                    }}
+                                    className="ml-auto gap-2 opacity-0 group-hover:opacity-100 hover:bg-red-50 transition"
+                                  >
+                                    <Trash2 className="size-4 text-red-500 hover:text-red-600" />
+                                  </Button>
 
                                   {field.value === category.id && (
                                     <Check className="size-4 text-primary" />

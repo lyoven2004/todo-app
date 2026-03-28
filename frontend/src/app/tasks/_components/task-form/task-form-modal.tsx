@@ -4,7 +4,6 @@ import { Trash2 } from "lucide-react"
 import { useId, useState } from "react"
 
 import {
-    TTaskCategoryDto,
     TTaskFormMode,
     TTaskFormValues,
     TTaskItemDto,
@@ -35,13 +34,16 @@ import { TASK_FORM_CONFIG } from "@/constants/task"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { TaskForm } from "./task-form"
 import { handleMutationError } from "@/utils/get-error-message"
+import { TCategoryDto } from "@/app/categories/_config/category.schema"
+import { deleteCategory } from "@/axios/category-api"
+import { useCategories, useCategoryActions } from "@/app/categories/_hooks/category.hook"
 
 type TTaskFormModalProps = {
     mode: TTaskFormMode
     open: boolean
     onOpenChange: (open: boolean) => void
     task: TTaskItemDto
-    categories: TTaskCategoryDto[]
+    categories: TCategoryDto[]
     onAddCategory?: (name: string) => void
 }
 
@@ -50,10 +52,9 @@ export function TaskFormModal({
     open,
     onOpenChange,
     task,
-    categories,
-    onAddCategory,
 }: TTaskFormModalProps) {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+    const { categories, isLoading } = useCategories()
 
     const { title, description } = TASK_FORM_CONFIG[mode]
 
@@ -118,6 +119,24 @@ export function TaskFormModal({
         })
     }
 
+    const {
+        createCategory,
+        deleteCategory,
+        isDeleting,
+    } = useCategoryActions()
+
+    const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null)
+
+    const handleAddCategory = (name: string) => {
+        createCategory({ name })
+    }
+
+    const handleDeleteCategory = () => {
+        if (!deleteCategoryId) return
+        deleteCategory(deleteCategoryId)
+        setDeleteCategoryId(null)
+    }
+
     const isSubmitting =
         createTaskMutation.isPending || updateTaskMutation.isPending
 
@@ -151,7 +170,8 @@ export function TaskFormModal({
                             categories={categories}
                             onSubmit={handleSubmit}
                             onCancel={handleClose}
-                            onAddCategory={onAddCategory}
+                            onAddCategory={handleAddCategory}
+                            onDeleteCategory={handleDeleteCategory}
                             formId={formId}
                             hideFooter
                         />
@@ -227,6 +247,13 @@ export function TaskFormModal({
                     </AlertDialogContent>
                 </AlertDialog>
             )}
+
+            <AlertDialog
+                open={!!deleteCategoryId}
+                onOpenChange={(open) => {
+                    if (!open) setDeleteCategoryId(null)
+                }}
+            />
         </>
     )
 }

@@ -1,5 +1,5 @@
 import {
-  TGetCategoryListResponseDto,
+  // TGetCategoryListResponseDto,
   TGetTaskDetailResponseDto,
   TGetTaskListRequestDto,
   TGetTaskListResponseDto,
