@@ -105,7 +105,7 @@ export function TaskFormModal({
             ...values,
             description: values.description || null,
             expiredAt: values.expiredAt || null,
-            categoryId: values.category || null,
+            categoryId: values.categoryId || null,
         }
 
         if (mode === "create") {
