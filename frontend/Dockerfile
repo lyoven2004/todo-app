@@ -1,33 +1,32 @@
-FROM node:20-alpine AS base
+FROM node:20-alpine AS builder
+
 WORKDIR /app
 
-RUN corepack enable
-
-FROM base AS deps
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-FROM base AS builder
-
 COPY . .
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 RUN pnpm build
 
-FROM node:20-alpine AS runner
+# ── Stage 2: Production ───────────────────────────────────────────────────────
+FROM node:20-alpine
 
 WORKDIR /app
 
-ENV NODE_ENV=production
 
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile --prod
 
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./
-
-RUN pnpm install --prod --frozen-lockfile
+COPY --from=builder /app/next.config.* ./
 
 EXPOSE 3000
-
 CMD ["pnpm", "start"]
