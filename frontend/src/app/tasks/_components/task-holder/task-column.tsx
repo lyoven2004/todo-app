@@ -8,8 +8,9 @@ import { cn } from "@/lib/utils"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { Plus } from "lucide-react"
 import { useCallback, useMemo, useState } from "react"
-import { TTaskCategoryDto, TTaskItemDto, TTaskPriority, TTaskSortBy, TTaskStatus } from "../../_config/task.schema"
+import { TTaskItemDto, TTaskPriority, TTaskSortBy, TTaskStatus } from "../../_config/task.schema"
 import { TaskCard } from "./task-card"
+import { TCategoryDto } from "@/app/categories/_config/category.schema"
 
 type TTaskColumnProps = {
   status: TTaskStatus
@@ -18,7 +19,7 @@ type TTaskColumnProps = {
   priorityFilter: TTaskPriority | null
   categoryFilter: string | null
   sortBy: TTaskSortBy
-  categories?: TTaskCategoryDto[]
+  categories?: TCategoryDto[]
   onAddTask?: () => void
   onEditTask?: (task: TTaskItemDto) => void
   onDeleteTask?: (taskId: string) => void

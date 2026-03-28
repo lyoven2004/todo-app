@@ -55,7 +55,7 @@ export function LoginForm() {
 
     onError: (error) => {
       toast.error("Sign in failed", {
-        description: getAuthErrorMessage(error.code),
+        description: getAuthErrorMessage(error.message),
       });
     },
   });

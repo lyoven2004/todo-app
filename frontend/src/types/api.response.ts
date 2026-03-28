@@ -12,6 +12,6 @@ export type TApiResponse<T> = {
 }
 
 export type TApiErrorResponse = {
-    message?: string | string[]
-    statusCode?: number
+  message?: string | string[]
+  statusCode?: number
 }

@@ -31,12 +31,12 @@ function createApiClient(): AxiosInstance {
       const backendMessage = res?.data?.message
 
       if (res?.status === 401) {
-          if (typeof window !== "undefined") {
-            clearAuthCookies()
-            window.location.href = "/login"
-          }
+        if (typeof window !== "undefined") {
+          clearAuthCookies()
+          window.location.href = "/login"
+        }
 
-          return Promise.reject(new ApiError("Session expired", { status: 401 }))
+        return Promise.reject(new ApiError("Session expired", { status: 401 }))
       }
 
       const message = Array.isArray(backendMessage)
