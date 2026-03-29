@@ -1,7 +1,7 @@
-import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
-import { clearAuthCookies, getTokenFromCookie } from "./auth-cookie";
-import { TApiErrorResponse } from "@/types/api.response";
 import { logoutUser, refreshUserToken } from "@/axios/auth-api";
+import { TApiErrorResponse } from "@/types/api.response";
+import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import { getTokenFromCookie } from "./auth-cookie";
 
 export class ApiError extends Error {
   status?: number
@@ -12,7 +12,6 @@ export class ApiError extends Error {
     this.status = options?.status
   }
 }
-
 
 export interface RetryAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean
@@ -83,7 +82,7 @@ function createApiClient(): AxiosInstance {
         } catch (refreshError) {
           pendingRequests.forEach((cb) => cb(""))
           pendingRequests = []
-          
+
           await logoutUser("Session expired, please login again")
           return Promise.reject(refreshError)
         } finally {

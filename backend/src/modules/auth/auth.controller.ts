@@ -1,12 +1,10 @@
-import { Controller, Body, Post, UseGuards, Req } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import { Public } from 'src/common/decorators/public.decorator';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { Public } from 'src/common/decorators/public.decorator';
 import { RefreshTokenGuard } from 'src/common/guards/refresh-token.guard';
+import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import type { RefreshRequestUser } from './types/refresh-request-user.type';
 
 @Controller('auth')

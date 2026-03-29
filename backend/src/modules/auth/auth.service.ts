@@ -1,21 +1,18 @@
 import { BadRequestException, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
-import { randomBytes } from 'crypto';
-
 import type { IUserRepository } from '../users/repositories/user.repository';
 import { USER_REPOSITORY } from '../users/repositories/user.token';
-import type { IRefreshRepository } from './repositories/refresh-token.repository';
 import { REFRESH_TOKEN_REPOSITORY } from './repositories/refresh-token';
+import type { IRefreshRepository } from './repositories/refresh-token.repository';
 
 import { getExpirationDate } from 'src/common/utils/time.util';
 import { JwtPayload } from './types/jwt-payload.type';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RefreshRequestUser } from './types/refresh-request-user.type';
 
 @Injectable()
