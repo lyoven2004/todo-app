@@ -6,22 +6,22 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaRefreshRepository } from './repositories/prisma-refresh-token.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { REFRESH_TOKEN_REPOSITORY } from './repositories/refresh-token';
-import { JwtStrategy } from './strategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { AccessTokenStrategy } from './strategies/access-token.strategy';
+import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 
 @Module({
   imports: [
-    UsersModule, 
+    UsersModule,
     ConfigModule,
     PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_ACCESS_SECRET,
-    }),
+    JwtModule.register({}),
   ],
   controllers: [AuthController],
   providers: [
     AuthService,
-    JwtStrategy,
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
     {
       provide: REFRESH_TOKEN_REPOSITORY,
       useClass: PrismaRefreshRepository,

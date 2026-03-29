@@ -122,8 +122,7 @@ export class AuthService {
         }
     }
 
-    async refreshToken(refreshTokenDto: RefreshTokenDto) {
-        const { refreshToken } = refreshTokenDto;
+    async refreshToken(userId: string, refreshToken: string) {
         let decoded: JwtPayload;
         try {
             decoded = await this.jwtService.verifyAsync(refreshToken, {
