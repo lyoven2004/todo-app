@@ -13,4 +13,10 @@ export interface IRefreshRepository {
   revoke(id: string): Promise<TRefreshToken>;
   findByToken(token: string): Promise<TRefreshToken | null>;
   update(id: string, data: Partial<TRefreshToken>): Promise<TRefreshToken>;
+  rotateToken(
+    oldTokenId: string,
+    userId: string,
+    newToken: string,
+    expiresAt: Date
+  ): Promise<TRefreshToken>;
 }

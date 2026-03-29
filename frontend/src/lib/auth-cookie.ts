@@ -10,20 +10,15 @@ export async function setAuthCookies(params: {
     refreshToken: string
 }) {
     const cookieStore = await cookies()
-    const secure = process.env.NODE_ENV === "production"
 
     cookieStore.set(ACCESS_TOKEN_KEY, params.accessToken, {
         httpOnly: true,
-        secure,
         sameSite: "lax",
-        path: "/",
     })
 
     cookieStore.set(REFRESH_TOKEN_KEY, params.refreshToken, {
         httpOnly: true,
-        secure,
         sameSite: "lax",
-        path: "/",
     })
 }
 

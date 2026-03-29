@@ -16,6 +16,7 @@ import { REFRESH_TOKEN_REPOSITORY } from './repositories/refresh-token';
 import { getExpirationDate } from 'src/common/utils/time.util';
 import { JwtPayload } from './types/jwt-payload.type';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { RefreshRequestUser } from './types/refresh-request-user.type';
 
 @Injectable()
 export class AuthService {
@@ -59,7 +60,6 @@ export class AuthService {
                 },
             };
         } catch (error) {
-            console.error("Register error: ", error);
             throw new InternalServerErrorException('Failed to register user');
         }
     }
@@ -117,25 +117,22 @@ export class AuthService {
                 refreshToken
             };
         } catch (error) {
-            console.error("Register error: ", error);
             throw new InternalServerErrorException('Failed to register user');
         }
     }
 
-    async refreshToken(userId: string, refreshToken: string) {
-        let decoded: JwtPayload;
-        try {
-            decoded = await this.jwtService.verifyAsync(refreshToken, {
-                secret: this.configService.get('JWT_REFRESH_SECRET')!,
-            });
-        } catch (error) {
-            throw new UnauthorizedException('Invalid refresh token');
-        }
+    async refreshToken(user: RefreshRequestUser) {
+
+        const { sub, email, refreshToken } = user;
 
         const token = await this.refreshRepository.findByToken(refreshToken);
 
         if (!token) {
             throw new UnauthorizedException('Token not found');
+        }
+
+        if (token.userId !== sub) {
+            throw new UnauthorizedException('Token does not belong to user');
         }
 
         if (token.revokedAt && token.replacedByTokenId) {
@@ -161,8 +158,8 @@ export class AuthService {
         }
 
         const payload: JwtPayload = {
-            sub: decoded.sub,
-            email: decoded.email,
+            sub: sub,
+            email: email,
         };
 
         const accessToken = await this.jwtService.signAsync(payload, {
@@ -179,47 +176,35 @@ export class AuthService {
 
         const expiresAt = getExpirationDate(expiresIn);
 
-        try {
-            const newToken = await this.refreshRepository.create({
-                userId: token.userId,
-                token: newRefreshToken,
-                expiresAt,
-            });
-
-            await this.refreshRepository.update(token.id, {
-                revokedAt: new Date(),
-                replacedByTokenId: newToken.id,
-            });
-
-            return {
-                accessToken,
-                refreshToken: newRefreshToken,
-            };
-        } catch (error) {
-            console.error('Refresh error:', error);
-            throw new InternalServerErrorException('Failed to refresh token');
-        }
-    }
-
-    async logout(userId: string) {
-        const tokens = await this.refreshRepository.findByUserId(userId);
-
-        if (tokens.length === 0) {
-            return {
-                message: 'Logout success',
-            };
-        }
-
-        await Promise.all(
-            tokens.map(t =>
-                this.refreshRepository.update(t.id, {
-                    revokedAt: new Date(),
-                })
-            )
+        await this.refreshRepository.rotateToken(
+            token.id,
+            token.userId,
+            newRefreshToken,
+            expiresAt
         );
 
         return {
-            message: 'Logout success',
+            accessToken,
+            refreshToken: newRefreshToken,
         };
+    }
+
+    async logout(userId?: string) {
+
+        if (userId) {
+            const tokens = await this.refreshRepository.findByUserId(userId);
+
+            await Promise.all(
+                tokens.map(t =>
+                    this.refreshRepository.update(t.id, {
+                        revokedAt: new Date(),
+                    })
+                )
+            );
+
+            return { message: 'Logout success' };
+        }
+
+        return { message: 'Logout success' };
     }
 }

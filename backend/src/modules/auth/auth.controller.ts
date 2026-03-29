@@ -29,11 +29,12 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @Post('refresh')
   async refresh(@CurrentUser() user: RefreshRequestUser) {
-    return this.authService.refreshToken(user.sub, user.refreshToken);
+    return this.authService.refreshToken(user);
   }
 
+  @Public()
   @Post('logout')
-  async logoutAll(@CurrentUser('sub') userId: string) {
+  async logoutAll(@CurrentUser('sub') userId?: string) {
     return await this.authService.logout(userId);
   }
 }
