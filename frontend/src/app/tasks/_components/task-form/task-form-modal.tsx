@@ -44,6 +44,7 @@ type TTaskFormModalProps = {
     task: TTaskItemDto
     categories: TCategoryDto[]
     onAddCategory?: (name: string) => void
+    onDeleteCategory?: (categoryId: string) => void
 }
 
 export function TaskFormModal({
@@ -130,6 +131,10 @@ export function TaskFormModal({
         createCategory({ name })
     }
 
+    const handleOpenDeleteCategory = (categoryId: string) => {
+        setDeleteCategoryId(categoryId)
+    }
+
     const handleDeleteCategory = () => {
         if (!deleteCategoryId) return
         deleteCategory(deleteCategoryId)
@@ -170,7 +175,7 @@ export function TaskFormModal({
                             onSubmit={handleSubmit}
                             onCancel={handleClose}
                             onAddCategory={handleAddCategory}
-                            onDeleteCategory={handleDeleteCategory}
+                            onDeleteCategory={handleOpenDeleteCategory}
                             formId={formId}
                             hideFooter
                         />
@@ -252,7 +257,31 @@ export function TaskFormModal({
                 onOpenChange={(open) => {
                     if (!open) setDeleteCategoryId(null)
                 }}
-            />
+            >
+                <AlertDialogContent className="rounded-2xl">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-lg font-semibold">
+                            Delete category
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-muted-foreground">
+                            Are you sure you want to delete this category? This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+
+                    <AlertDialogFooter className="gap-2">
+                        <AlertDialogCancel className="rounded-lg">
+                            Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDeleteCategory}
+                            className="rounded-lg bg-red-600 hover:bg-red-700"
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? "Deleting..." : "Delete"}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog >
         </>
     )
 }
