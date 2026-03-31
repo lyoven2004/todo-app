@@ -63,7 +63,7 @@ jobs:
           version: 9
 
       - name: Install frontend dependencies
-        run: cd frontend && pnpm install
+        run: pnpm install
 
       - name: Run frontend lint
         run: pnpm lint
