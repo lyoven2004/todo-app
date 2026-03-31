@@ -6,7 +6,6 @@ on:
     types: [labeled]
     branches:
       - develop
-      - main
 
 jobs:
   detect_changed_paths: 
