@@ -6,12 +6,13 @@ import { PrismaCategoryRepository } from './repositories/prisma-category.reposit
 
 @Module({
   controllers: [CategoriesController],
-  providers: [CategoriesService,
+  providers: [
+    CategoriesService,
     {
       provide: CATEGORY_REPOSITORY,
       useClass: PrismaCategoryRepository,
-    }
+    },
   ],
-  exports: [CATEGORY_REPOSITORY]
+  exports: [CATEGORY_REPOSITORY],
 })
-export class CategoriesModule { }
+export class CategoriesModule {}

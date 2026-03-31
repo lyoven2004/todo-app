@@ -11,12 +11,7 @@ import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 
 @Module({
-  imports: [
-    UsersModule,
-    ConfigModule,
-    PassportModule,
-    JwtModule.register({}),
-  ],
+  imports: [UsersModule, ConfigModule, PassportModule, JwtModule.register({})],
   controllers: [AuthController],
   providers: [
     AuthService,
@@ -27,6 +22,6 @@ import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
       useClass: PrismaRefreshRepository,
     },
   ],
-  exports: [REFRESH_TOKEN_REPOSITORY]
+  exports: [REFRESH_TOKEN_REPOSITORY],
 })
-export class AuthModule { }
+export class AuthModule {}

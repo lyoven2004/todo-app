@@ -1,23 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import {
-  TCreateUserRepositoryInput,
-  IUserRepository,
-} from './user.repository';
+import { TCreateUserRepositoryInput, IUserRepository } from './user.repository';
 import { TUser } from '../entites/users.entity';
 
 @Injectable()
 export class PrismaUserRepository implements IUserRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(createUserRepositoryInput: TCreateUserRepositoryInput): Promise<TUser> {
-
+  async create(
+    createUserRepositoryInput: TCreateUserRepositoryInput,
+  ): Promise<TUser> {
     return this.prisma.user.create({
       data: {
         email: createUserRepositoryInput.email,
         password: createUserRepositoryInput.password,
         name: createUserRepositoryInput.name,
-      }
+      },
     });
   }
 

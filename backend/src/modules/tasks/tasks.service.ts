@@ -1,11 +1,20 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CATEGORY_REPOSITORY } from '../categories/repositories/category-token';
 import type { ICategoryRepository } from '../categories/repositories/category.repository';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskPriority, TaskStatus, TTask } from './entities/task.entity';
 import { TASK_REPOSITORY } from './repositories/task-token';
-import type { ITaskRepository, TCreateTaskInput, TUpdateTaskInput } from './repositories/task.repository';
+import type {
+  ITaskRepository,
+  TCreateTaskInput,
+  TUpdateTaskInput,
+} from './repositories/task.repository';
 import { QueryTasksDto } from './dto/query-task.dto';
 
 @Injectable()
@@ -14,13 +23,11 @@ export class TasksService {
     @Inject(TASK_REPOSITORY)
     private taskRepository: ITaskRepository,
     @Inject(CATEGORY_REPOSITORY)
-    private categoryRepository: ICategoryRepository
-  ) { }
+    private categoryRepository: ICategoryRepository,
+  ) {}
 
   async create(dto: CreateTaskDto, userId: string): Promise<TTask> {
-
     if (dto.categoryId) {
-
       const category = await this.categoryRepository.findByIdAndUserId(
         dto.categoryId,
         userId,
@@ -57,9 +64,7 @@ export class TasksService {
     return task;
   }
 
-  async update(id: string, userId: string, dto: UpdateTaskDto)
-    : Promise<TTask> {
-
+  async update(id: string, userId: string, dto: UpdateTaskDto): Promise<TTask> {
     if (dto.categoryId) {
       const category = await this.categoryRepository.findByIdAndUserId(
         dto.categoryId,

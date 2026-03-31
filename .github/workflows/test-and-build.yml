@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+    types: [labeled]
+    branches:
+      - develop
+      - main
+
+jobs:
+  detect_changed_paths: 
+    if: github.event.label.name == 'Ready for review'
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Detect changed paths
+        uses: dorny/paths-filter@v3 
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - '.github/workflows/test-and-build.yml'
+            frontend:
+              - 'frontend/**'
+              - '.github/workflows/test-and-build.yml'
+
+  backend:
+    needs: detect_changed_paths
+    if: needs.detect_changed_paths.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Run backend lint
+        run: npm run lint
+
+      - name: Run backend type check
+        run: npx tsc --noEmit
+
+      - name: Build backend
+        run: npm run build
+
+  frontend:
+    needs: detect_changed_paths
+    if: needs.detect_changed_paths.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install frontend dependencies
+        run: pnpm install
+
+      - name: Run frontend lint
+        run: pnpm lint
+
+      - name: Run frontend type check
+        run: pnpm exec tsc --noEmit
+
+      - name: Build frontend
+        run: pnpm build

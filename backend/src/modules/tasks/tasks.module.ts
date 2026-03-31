@@ -8,12 +8,13 @@ import { CategoriesModule } from '../categories/categories.module';
 @Module({
   imports: [CategoriesModule],
   controllers: [TasksController],
-  providers: [TasksService,
+  providers: [
+    TasksService,
     {
       provide: TASK_REPOSITORY,
       useClass: PrismaTaskRepository,
-    }
+    },
   ],
-  exports: [TASK_REPOSITORY]
+  exports: [TASK_REPOSITORY],
 })
 export class TasksModule {}
