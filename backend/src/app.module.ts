@@ -8,11 +8,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AcessTokenGuard } from './common/guards/access-token.guard';
 
 @Module({
-  imports: [
-    AuthModule,
-    TasksModule,
-    PrismaModule
-  ],
+  imports: [AuthModule, TasksModule, PrismaModule],
   controllers: [AppController],
   providers: [
     AppService,
@@ -22,4 +18,4 @@ import { AcessTokenGuard } from './common/guards/access-token.guard';
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

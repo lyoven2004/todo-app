@@ -1,4 +1,10 @@
-import { BadRequestException, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -17,191 +23,186 @@ import { RefreshRequestUser } from './types/refresh-request-user.type';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        @Inject(USER_REPOSITORY)
-        private userRepository: IUserRepository,
+  constructor(
+    @Inject(USER_REPOSITORY)
+    private userRepository: IUserRepository,
 
-        @Inject(REFRESH_TOKEN_REPOSITORY)
-        private refreshRepository: IRefreshRepository,
+    @Inject(REFRESH_TOKEN_REPOSITORY)
+    private refreshRepository: IRefreshRepository,
 
-        private jwtService: JwtService,
-        private configService: ConfigService
-    ) { }
+    private jwtService: JwtService,
+    private configService: ConfigService,
+  ) {}
 
-    async register(registerDto: RegisterDto) {
-        const { email, name, password } = registerDto;
+  async register(registerDto: RegisterDto) {
+    const { email, name, password } = registerDto;
 
-        const emailNormalized = email.toLowerCase().trim();
+    const emailNormalized = email.toLowerCase().trim();
 
-        const existing = await this.userRepository.findByEmail(email);
+    const existing = await this.userRepository.findByEmail(email);
 
-        if (existing) {
-            throw new BadRequestException('Email already exists');
-        }
-
-        const hashedPassword = await bcrypt.hash(password, Number(this.configService.get('SALT_ROUNDS')));
-
-        try {
-            const user = await this.userRepository.create({
-                email: emailNormalized,
-                password: hashedPassword,
-                name: name.trim()
-            });
-
-            return {
-                message: 'Register success',
-                user: {
-                    id: user.id,
-                    email: user.email,
-                    name: user.name,
-                },
-            };
-        } catch (error) {
-            throw new InternalServerErrorException('Failed to register user');
-        }
+    if (existing) {
+      throw new BadRequestException('Email already exists');
     }
 
-    async login(loginDto: LoginDto) {
-        const { email, password } = loginDto;
+    const hashedPassword = await bcrypt.hash(
+      password,
+      Number(this.configService.get('SALT_ROUNDS')),
+    );
 
-        const user = await this.userRepository.findByEmail(email);
+    try {
+      const user = await this.userRepository.create({
+        email: emailNormalized,
+        password: hashedPassword,
+        name: name.trim(),
+      });
 
-        if (!user) {
-            throw new UnauthorizedException('Invalid credentials');
-        }
+      return {
+        message: 'Register success',
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        },
+      };
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to register user');
+    }
+  }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+  async login(loginDto: LoginDto) {
+    const { email, password } = loginDto;
 
-        if (!isMatch) {
-            throw new UnauthorizedException('Invalid credentials');
-        }
+    const user = await this.userRepository.findByEmail(email);
 
-        const payload: JwtPayload = {
-            sub: user.id,
-            email: user.email,
-        };
-
-        const accessToken = await this.jwtService.signAsync(
-            payload,
-            {
-                secret: this.configService.get('JWT_ACCESS_SECRET')!,
-                expiresIn: this.configService.get('JWT_ACCESS_EXPIRES')!,
-            },
-        );
-
-        const expiresIn = this.configService.get('JWT_REFRESH_EXPIRES')!;
-
-        const refreshToken = await this.jwtService.signAsync(
-            payload,
-            {
-                secret: this.configService.get('JWT_REFRESH_SECRET')!,
-                expiresIn
-            }
-        );
-
-        const expiresAt = getExpirationDate(expiresIn);
-
-        try {
-            await this.refreshRepository.create({
-                userId: user.id,
-                token: refreshToken,
-                expiresAt,
-            });
-
-            return {
-                message: 'Login success',
-                accessToken,
-                refreshToken
-            };
-        } catch (error) {
-            throw new InternalServerErrorException('Failed to register user');
-        }
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
     }
 
-    async refreshToken(user: RefreshRequestUser) {
+    const isMatch = await bcrypt.compare(password, user.password);
 
-        const { sub, email, refreshToken } = user;
-
-        const token = await this.refreshRepository.findByToken(refreshToken);
-
-        if (!token) {
-            throw new UnauthorizedException('Token not found');
-        }
-
-        if (token.userId !== sub) {
-            throw new UnauthorizedException('Token does not belong to user');
-        }
-
-        if (token.revokedAt && token.replacedByTokenId) {
-            const allTokens = await this.refreshRepository.findByUserId(token.userId);
-
-            await Promise.all(
-                allTokens.map(t =>
-                    this.refreshRepository.update(t.id, {
-                        revokedAt: new Date(),
-                    })
-                )
-            );
-
-            throw new UnauthorizedException('Token reuse detected');
-        }
-
-        if (token.revokedAt) {
-            throw new UnauthorizedException('Token revoked');
-        }
-
-        if (token.expiresAt < new Date()) {
-            throw new UnauthorizedException('Token expired');
-        }
-
-        const payload: JwtPayload = {
-            sub: sub,
-            email: email,
-        };
-
-        const accessToken = await this.jwtService.signAsync(payload, {
-            secret: this.configService.get('JWT_ACCESS_SECRET')!,
-            expiresIn: this.configService.get('JWT_ACCESS_EXPIRES')!,
-        });
-
-        const expiresIn = this.configService.get('JWT_REFRESH_EXPIRES')!;
-
-        const newRefreshToken = await this.jwtService.signAsync(payload, {
-            secret: this.configService.get('JWT_REFRESH_SECRET')!,
-            expiresIn,
-        });
-
-        const expiresAt = getExpirationDate(expiresIn);
-
-        await this.refreshRepository.rotateToken(
-            token.id,
-            token.userId,
-            newRefreshToken,
-            expiresAt
-        );
-
-        return {
-            accessToken,
-            refreshToken: newRefreshToken,
-        };
+    if (!isMatch) {
+      throw new UnauthorizedException('Invalid credentials');
     }
 
-    async logout(userId?: string) {
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+    };
 
-        if (userId) {
-            const tokens = await this.refreshRepository.findByUserId(userId);
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get('JWT_ACCESS_SECRET')!,
+      expiresIn: this.configService.get('JWT_ACCESS_EXPIRES')!,
+    });
 
-            await Promise.all(
-                tokens.map(t =>
-                    this.refreshRepository.update(t.id, {
-                        revokedAt: new Date(),
-                    })
-                )
-            );
+    const expiresIn = this.configService.get('JWT_REFRESH_EXPIRES')!;
 
-            return { message: 'Logout success' };
-        }
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get('JWT_REFRESH_SECRET')!,
+      expiresIn,
+    });
 
-        return { message: 'Logout success' };
+    const expiresAt = getExpirationDate(expiresIn);
+
+    try {
+      await this.refreshRepository.create({
+        userId: user.id,
+        token: refreshToken,
+        expiresAt,
+      });
+
+      return {
+        message: 'Login success',
+        accessToken,
+        refreshToken,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to register user');
     }
+  }
+
+  async refreshToken(user: RefreshRequestUser) {
+    const { sub, email, refreshToken } = user;
+
+    const token = await this.refreshRepository.findByToken(refreshToken);
+
+    if (!token) {
+      throw new UnauthorizedException('Token not found');
+    }
+
+    if (token.userId !== sub) {
+      throw new UnauthorizedException('Token does not belong to user');
+    }
+
+    if (token.revokedAt && token.replacedByTokenId) {
+      const allTokens = await this.refreshRepository.findByUserId(token.userId);
+
+      await Promise.all(
+        allTokens.map((t) =>
+          this.refreshRepository.update(t.id, {
+            revokedAt: new Date(),
+          }),
+        ),
+      );
+
+      throw new UnauthorizedException('Token reuse detected');
+    }
+
+    if (token.revokedAt) {
+      throw new UnauthorizedException('Token revoked');
+    }
+
+    if (token.expiresAt < new Date()) {
+      throw new UnauthorizedException('Token expired');
+    }
+
+    const payload: JwtPayload = {
+      sub: sub,
+      email: email,
+    };
+
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get('JWT_ACCESS_SECRET')!,
+      expiresIn: this.configService.get('JWT_ACCESS_EXPIRES')!,
+    });
+
+    const expiresIn = this.configService.get('JWT_REFRESH_EXPIRES')!;
+
+    const newRefreshToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get('JWT_REFRESH_SECRET')!,
+      expiresIn,
+    });
+
+    const expiresAt = getExpirationDate(expiresIn);
+
+    await this.refreshRepository.rotateToken(
+      token.id,
+      token.userId,
+      newRefreshToken,
+      expiresAt,
+    );
+
+    return {
+      accessToken,
+      refreshToken: newRefreshToken,
+    };
+  }
+
+  async logout(userId?: string) {
+    if (userId) {
+      const tokens = await this.refreshRepository.findByUserId(userId);
+
+      await Promise.all(
+        tokens.map((t) =>
+          this.refreshRepository.update(t.id, {
+            revokedAt: new Date(),
+          }),
+        ),
+      );
+
+      return { message: 'Logout success' };
+    }
+
+    return { message: 'Logout success' };
+  }
 }

@@ -1,5 +1,5 @@
-import { TPaginationResult } from "src/common/types/pagination.type";
-import { TaskPriority, TaskStatus, TTask } from "../entities/task.entity";
+import { TPaginationResult } from 'src/common/types/pagination.type';
+import { TaskPriority, TaskStatus, TTask } from '../entities/task.entity';
 
 export type TCreateTaskInput = {
   title: string;
@@ -11,7 +11,7 @@ export type TCreateTaskInput = {
 };
 
 export type TQueryTask = {
-  search?: string
+  search?: string;
   status?: TaskStatus;
   priority?: TaskPriority;
   categoryId?: string;
@@ -36,7 +36,10 @@ export interface ITaskRepository {
   findById(id: string): Promise<TTask | null>;
   findByUserId(userId: string): Promise<TTask[]>;
   findByIdAndUserId(id: string, userId: string): Promise<TTask | null>;
-  findAllByUserId(userId: string, query: TQueryTask): Promise<TPaginationResult<TTask>>;
+  findAllByUserId(
+    userId: string,
+    query: TQueryTask,
+  ): Promise<TPaginationResult<TTask>>;
   delete(id: string): Promise<void>;
   update(id: string, userId: string, data: TUpdateTaskInput): Promise<TTask>;
 }

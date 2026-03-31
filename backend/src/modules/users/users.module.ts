@@ -17,4 +17,4 @@ import { USER_REPOSITORY } from './repositories/user.token';
   ],
   exports: [USER_REPOSITORY],
 })
-export class UsersModule { }
+export class UsersModule {}

@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -7,27 +16,26 @@ import { QueryCategoryDto } from './dto/query-category.dto';
 
 @Controller('categories')
 export class CategoriesController {
-  constructor(private readonly categoriesService: CategoriesService) { }
+  constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
   create(
     @Body() createCategoryDto: CreateCategoryDto,
-    @CurrentUser('sub') userId: string) {
+    @CurrentUser('sub') userId: string,
+  ) {
     return this.categoriesService.create(createCategoryDto, userId);
   }
 
   @Get()
   findAll(
     @Query() query: QueryCategoryDto,
-    @CurrentUser('sub') userId: string
+    @CurrentUser('sub') userId: string,
   ) {
     return this.categoriesService.findAll(userId, query);
   }
 
   @Delete(':id')
-  delete(
-    @Param('id') id: string,
-    @CurrentUser('sub') userId: string) {
+  delete(@Param('id') id: string, @CurrentUser('sub') userId: string) {
     return this.categoriesService.delete(id, userId);
   }
 }

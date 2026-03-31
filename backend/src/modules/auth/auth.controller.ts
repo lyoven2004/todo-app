@@ -9,7 +9,7 @@ import type { RefreshRequestUser } from './types/refresh-request-user.type';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('register')

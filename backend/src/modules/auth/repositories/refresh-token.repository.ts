@@ -1,4 +1,4 @@
-import { TRefreshToken } from "../entities/refresh-token.entity";
+import { TRefreshToken } from '../entities/refresh-token.entity';
 
 export type TCreateRefreshTokenInput = {
   userId: string;
@@ -17,6 +17,6 @@ export interface IRefreshRepository {
     oldTokenId: string,
     userId: string,
     newToken: string,
-    expiresAt: Date
+    expiresAt: Date,
   ): Promise<TRefreshToken>;
 }

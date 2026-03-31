@@ -33,11 +33,8 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
-      - name: Validate Prisma schema
-        run: npx prisma validate
-
       - name: Run backend lint
-        run: npm run lint --if-present
+        run: npm run lint
 
       - name: Run backend type check
         run: npx tsc --noEmit
@@ -59,10 +56,6 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-          cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4

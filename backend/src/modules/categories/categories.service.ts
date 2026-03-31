@@ -1,32 +1,44 @@
-import { BadRequestException, ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { normalizeName } from 'src/common/utils/normalize.util';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { QueryCategoryDto } from './dto/query-category.dto';
 import { TCategory } from './entities/category.entity';
 import { CATEGORY_REPOSITORY } from './repositories/category-token';
-import type { ICategoryRepository, TCreateCategoryInput } from './repositories/category.repository';
+import type {
+  ICategoryRepository,
+  TCreateCategoryInput,
+} from './repositories/category.repository';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @Inject(CATEGORY_REPOSITORY)
-    private categoryRepository: ICategoryRepository
-  ) { }
+    private categoryRepository: ICategoryRepository,
+  ) {}
 
   async create(dto: CreateCategoryDto, userId: string): Promise<TCategory> {
     const { name } = dto;
 
     const normalizedName = normalizeName(name);
 
-    const existing = await this.categoryRepository.findByNameAndUserId(normalizedName, userId)
+    const existing = await this.categoryRepository.findByNameAndUserId(
+      normalizedName,
+      userId,
+    );
 
     if (existing) {
-      throw new ConflictException(normalizedName + ' already exists')
+      throw new ConflictException(normalizedName + ' already exists');
     }
 
     const data: TCreateCategoryInput = {
-      name: normalizedName
-    }
+      name: normalizedName,
+    };
     return this.categoryRepository.create(data, userId);
   }
 
@@ -35,7 +47,10 @@ export class CategoriesService {
   }
 
   async delete(id: string, userId: string): Promise<{ message: string }> {
-    const category = await this.categoryRepository.findByIdAndUserId(id, userId);
+    const category = await this.categoryRepository.findByIdAndUserId(
+      id,
+      userId,
+    );
 
     if (!category) {
       throw new NotFoundException('Category not found');

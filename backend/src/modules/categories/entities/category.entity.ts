@@ -1,9 +1,9 @@
 export type TCategory = {
-    id: string;
-    name: string;
+  id: string;
+  name: string;
 
-    userId: string;
+  userId: string;
 
-    createdAt: Date;
-    updatedAt: Date;
-}
+  createdAt: Date;
+  updatedAt: Date;
+};

@@ -1,11 +1,4 @@
-import {
-  IsOptional,
-  IsEnum,
-  IsUUID,
-  IsInt,
-  Min,
-  IsIn,
-} from 'class-validator';
+import { IsOptional, IsEnum, IsUUID, IsInt, Min, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
 import { TaskPriority, TaskStatus } from '../entities/task.entity';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
