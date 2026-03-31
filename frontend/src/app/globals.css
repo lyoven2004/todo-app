@@ -47,7 +47,8 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
   --color-priority-medium: var(--priority-medium);
-  --color-button: var(--button)
+  --color-button: var(--button);
+  --color-category: var(--category)
 }
 
 :root {
@@ -69,6 +70,7 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
+  --category: oklch(85.034% 0.08945 310.133);
   --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);

@@ -8,11 +8,19 @@ export const TASK_STATUS_OPTIONS: Array<{ label: string; value: TTaskStatus }> =
     { label: "Failed", value: "FAILED" },
 ]
 
-export const SORT_MAP = {
-    newest: "createdAt",
-    oldest: "createdAt",
-    dueDate: "expiredAt",
-    priority: "priority",
+export const SORT_QUERY_MAP = {
+  newest: {
+    sortBy: "createdAt",
+    order: "desc",
+  },
+  oldest: {
+    sortBy: "createdAt",
+    order: "asc",
+  },
+  dueDate: {
+    sortBy: "expiredAt",
+    order: "asc",
+  },
 } as const
 
 export const PRIORITY_OPTIONS: Array<{
@@ -29,7 +37,6 @@ export const SORT_OPTIONS: Array<{ label: string; value: TTaskSortBy }> = [
     { label: "Newest First", value: "newest" },
     { label: "Oldest First", value: "oldest" },
     { label: "Due Date", value: "dueDate" },
-    { label: "Priority", value: "priority" },
 ]
 
 export const STATUS_ICONS: Record<TTaskStatus, LucideIcon> = {

@@ -26,7 +26,7 @@ export default function TaskPage() {
             id: "",
             title: "",
             description: "",
-            status: status || 'NOT_STARTED',
+            status: status || "NOT_STARTED",
             priority: "LOW",
             expiredAt: "",
             categoryId: "",
@@ -86,6 +86,7 @@ export default function TaskPage() {
                         onStatusFilterChange={setStatusFilter}
                         priorityFilter={priorityFilter}
                         onPriorityFilterChange={setPriorityFilter}
+                        categories={[]}
                         categoryFilter={categoryFilter}
                         onCategoryFilterChange={setCategoryFilter}
                         sortBy={sortBy}

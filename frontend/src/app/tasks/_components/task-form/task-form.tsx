@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
-import { Calendar, Check, ChevronDown, Plus, Trash2 } from "lucide-react"
+import { Calendar, Check, ChevronDown, Plus, X } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 
@@ -284,13 +284,13 @@ export function TaskForm({
                                       e.stopPropagation()
                                       onDeleteCategory?.(category.id)
                                     }}
-                                    className="ml-auto gap-2 opacity-0 group-hover:opacity-100 hover:bg-red-50 transition"
+                                    className="justify-end ml-auto gap-2 opacity-0 group-hover:opacity-100 hover:bg-red-50 transition"
                                   >
-                                    <Trash2 className="size-4 text-red-500 hover:text-red-600" />
+                                    <X className="size-4 text-red-500 hover:text-red-600 " />
                                   </Button>
 
                                   {field.value === category.id && (
-                                    <Check className="size-4 text-primary" />
+                                    <Check className="size-4 text-primary-foreground" />
                                   )}
                                 </CommandItem>
                               ))}
@@ -392,9 +392,8 @@ export function TaskForm({
                       <PopoverContent className="w-auto p-0" align="start">
                         <CalendarComponent
                           mode="single"
-                          selected={
-                            selectedDate ? new Date(selectedDate) : undefined
-                          }
+                          selected={selectedDate ? new Date(selectedDate) : undefined}
+                          disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                           onSelect={(date) => {
                             if (!date) return
                             field.onChange(format(date, "yyyy-MM-dd"))
@@ -425,9 +424,7 @@ export function TaskForm({
                       <FormControl>
                         <SelectTrigger className="!h-10 mb-0 w-full bg-background hover:bg-muted/50">
                           <SelectValue className="mr-2 size-4 text-muted-foreground">
-                            {typeof field.value === "string" ? (
-                              <StatusValue status={field.value as TTaskStatus} />
-                            ) : <span className="text-muted-foreground">Select status</span>}
+                            <StatusValue status={field.value} />
                           </SelectValue>
                         </SelectTrigger>
                       </FormControl>
