@@ -419,12 +419,12 @@ export function TaskForm({
 
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value || "NOT_STARTED"}
+                      defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger className="!h-10 mb-0 w-full bg-background hover:bg-muted/50">
                           <SelectValue className="mr-2 size-4 text-muted-foreground">
-                            <StatusValue status={field.value || "NOT_STARTED"} />
+                            <StatusValue status={field.value} />
                           </SelectValue>
                         </SelectTrigger>
                       </FormControl>
