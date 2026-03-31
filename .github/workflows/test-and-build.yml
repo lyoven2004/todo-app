@@ -3,13 +3,15 @@ name: CI
 on:
   push:
   pull_request:
+    types: [labeled]
     branches:
       - develop
       - main
 
 jobs:
-  changes: 
-   runs-on: ubuntu-latest
+  detect_changed_paths: 
+    if: github.event.label.name == 'Ready for review'
+    runs-on: ubuntu-latest
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend: ${{ steps.filter.outputs.frontend }}
@@ -30,8 +32,8 @@ jobs:
               - '.github/workflows/test-and-build.yml'
 
   backend:
-    needs: changes
-    if: needs.changes.outputs.backend == 'true'
+    needs: detect_changed_paths
+    if: needs.detect_changed_paths.outputs.backend == 'true'
     runs-on: ubuntu-latest
 
     defaults:
@@ -65,8 +67,8 @@ jobs:
         run: npm run build
 
   frontend:
-    needs: changes
-    if: needs.changes.outputs.frontend == 'true'
+    needs: detect_changed_paths
+    if: needs.detect_changed_paths.outputs.frontend == 'true'
     runs-on: ubuntu-latest
 
     defaults:
