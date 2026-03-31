@@ -1,20 +1,19 @@
 import { BadRequestException, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
-import { randomBytes } from 'crypto';
-
 import type { IUserRepository } from '../users/repositories/user.repository';
 import { USER_REPOSITORY } from '../users/repositories/user.token';
-import type { IRefreshRepository } from './repositories/refresh-token.repository';
 import { REFRESH_TOKEN_REPOSITORY } from './repositories/refresh-token';
+import type { IRefreshRepository } from './repositories/refresh-token.repository';
 
 import { getExpirationDate } from 'src/common/utils/time.util';
 import { JwtPayload } from './types/jwt-payload.type';
+import { RefreshRequestUser } from './types/refresh-request-user.type';
 
 @Injectable()
 export class AuthService {
@@ -58,7 +57,6 @@ export class AuthService {
                 },
             };
         } catch (error) {
-            console.error("Register error: ", error);
             throw new InternalServerErrorException('Failed to register user');
         }
     }
@@ -116,8 +114,94 @@ export class AuthService {
                 refreshToken
             };
         } catch (error) {
-            console.error("Register error: ", error);
             throw new InternalServerErrorException('Failed to register user');
         }
+    }
+
+    async refreshToken(user: RefreshRequestUser) {
+
+        const { sub, email, refreshToken } = user;
+
+        const token = await this.refreshRepository.findByToken(refreshToken);
+
+        if (!token) {
+            throw new UnauthorizedException('Token not found');
+        }
+
+        if (token.userId !== sub) {
+            throw new UnauthorizedException('Token does not belong to user');
+        }
+
+        if (token.revokedAt && token.replacedByTokenId) {
+            const allTokens = await this.refreshRepository.findByUserId(token.userId);
+
+            await Promise.all(
+                allTokens.map(t =>
+                    this.refreshRepository.update(t.id, {
+                        revokedAt: new Date(),
+                    })
+                )
+            );
+
+            throw new UnauthorizedException('Token reuse detected');
+        }
+
+        if (token.revokedAt) {
+            throw new UnauthorizedException('Token revoked');
+        }
+
+        if (token.expiresAt < new Date()) {
+            throw new UnauthorizedException('Token expired');
+        }
+
+        const payload: JwtPayload = {
+            sub: sub,
+            email: email,
+        };
+
+        const accessToken = await this.jwtService.signAsync(payload, {
+            secret: this.configService.get('JWT_ACCESS_SECRET')!,
+            expiresIn: this.configService.get('JWT_ACCESS_EXPIRES')!,
+        });
+
+        const expiresIn = this.configService.get('JWT_REFRESH_EXPIRES')!;
+
+        const newRefreshToken = await this.jwtService.signAsync(payload, {
+            secret: this.configService.get('JWT_REFRESH_SECRET')!,
+            expiresIn,
+        });
+
+        const expiresAt = getExpirationDate(expiresIn);
+
+        await this.refreshRepository.rotateToken(
+            token.id,
+            token.userId,
+            newRefreshToken,
+            expiresAt
+        );
+
+        return {
+            accessToken,
+            refreshToken: newRefreshToken,
+        };
+    }
+
+    async logout(userId?: string) {
+
+        if (userId) {
+            const tokens = await this.refreshRepository.findByUserId(userId);
+
+            await Promise.all(
+                tokens.map(t =>
+                    this.refreshRepository.update(t.id, {
+                        revokedAt: new Date(),
+                    })
+                )
+            );
+
+            return { message: 'Logout success' };
+        }
+
+        return { message: 'Logout success' };
     }
 }

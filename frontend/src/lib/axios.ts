@@ -1,6 +1,7 @@
-import axios, { AxiosError, AxiosInstance } from "axios";
-import { clearAuthCookies, getTokenFromCookie } from "./auth-cookie";
+import { logoutUser, refreshUserToken } from "@/axios/auth-api";
 import { TApiErrorResponse } from "@/types/api.response";
+import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import { getTokenFromCookie } from "./auth-cookie";
 
 export class ApiError extends Error {
   status?: number
@@ -12,6 +13,10 @@ export class ApiError extends Error {
   }
 }
 
+export interface RetryAxiosRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean
+}
+
 function createApiClient(): AxiosInstance {
   const instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -19,36 +24,82 @@ function createApiClient(): AxiosInstance {
   })
 
   instance.interceptors.request.use(async (config) => {
-    const token = await getTokenFromCookie('accessToken')
-    config.headers.Authorization = `Bearer ${token}`
-    return config
+
+    if (config.url?.includes("/auth/refresh")) return config;
+
+    const token = await getTokenFromCookie("accessToken");
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+
+    return config;
   })
+
+  let isRefreshing = false
+  let pendingRequests: ((token: string) => void)[] = []
 
   instance.interceptors.response.use(
     (response) => response,
-    (error: AxiosError<TApiErrorResponse>) => {
-      const res = error.response
-      const backendMessage = res?.data?.message
+    async (error: unknown) => {
+      const err = error as AxiosError<TApiErrorResponse>
+      const res = err.response
+      const originalRequest = err.config as RetryAxiosRequestConfig
 
-      if (res?.status === 401) {
-        if (typeof window !== "undefined") {
-          clearAuthCookies()
-          window.location.href = "/login"
+      const isRefreshRequest = originalRequest?.url?.includes("/auth/refresh")
+
+      if (isRefreshRequest && res?.status === 401) {
+        await logoutUser("Session expired, please login again")
+        return Promise.reject(error)
+      }
+
+      if (res?.status === 401 && originalRequest && !originalRequest._retry) {
+        originalRequest._retry = true
+
+        if (isRefreshing) {
+          return new Promise((resolve) => {
+            pendingRequests.push((token: string) => {
+              if (originalRequest.headers) {
+                originalRequest.headers.Authorization = `Bearer ${token}`
+              }
+              resolve(instance(originalRequest))
+            })
+          })
         }
 
-        return Promise.reject(new ApiError("Session expired", { status: 401 }))
+        isRefreshing = true
+
+        try {
+          const newAccessToken = await refreshUserToken()
+
+          pendingRequests.forEach((cb) => cb(newAccessToken))
+          pendingRequests = []
+
+          if (originalRequest.headers) {
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+          }
+
+          return instance(originalRequest)
+        } catch (refreshError) {
+          pendingRequests.forEach((cb) => cb(""))
+          pendingRequests = []
+
+          await logoutUser("Session expired, please login again")
+          return Promise.reject(refreshError)
+        } finally {
+          isRefreshing = false
+        }
       }
+
+      const backendMessage = res?.data?.message
 
       const message = Array.isArray(backendMessage)
         ? backendMessage.join(", ")
-        : backendMessage || error.message || "Something went wrong"
+        : backendMessage || err.message || "Something went wrong"
 
       return Promise.reject(
         new ApiError(message, {
           status: res?.status ?? res?.data?.statusCode,
         }),
       )
-    },
+    }
   )
   return instance
 }

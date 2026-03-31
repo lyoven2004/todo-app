@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { TLoginFormValues, TLoginRequestDto, TLoginResponseDto, loginSchema } from "../_config/login.schema";
@@ -27,6 +27,15 @@ import { useRouter } from "next/navigation";
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
+  useEffect(() => {
+    const message = localStorage.getItem("auth_message")
+
+    if (message) {
+      toast.error(message)
+      localStorage.removeItem("auth_message")
+    }
+  }, [])
+  
   const form = useForm<TLoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -37,7 +46,7 @@ export function LoginForm() {
   });
 
   const router = useRouter()
-  
+
   const { mutate: login, isPending } = useMutation<TLoginResponseDto, ApiError, TLoginRequestDto>({
     mutationFn: loginUser,
     onSuccess: (data) => {

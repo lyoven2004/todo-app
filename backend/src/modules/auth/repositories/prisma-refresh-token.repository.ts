@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "prisma/prisma.service";
 import { TCreateRefreshTokenInput, IRefreshRepository } from "./refresh-token.repository";
 import dayjs from "dayjs";
+import { TRefreshToken } from "../entities/refresh-token.entity";
 
 @Injectable()
 export class PrismaRefreshRepository implements IRefreshRepository {
@@ -25,6 +26,46 @@ export class PrismaRefreshRepository implements IRefreshRepository {
             data: {
                 revokedAt: dayjs().toDate(),
             },
+        });
+    }
+
+    async findByToken(token: string) {
+        return this.prisma.refreshToken.findFirst({
+            where: { token },
+        });
+    }
+
+    async update(id: string, data: Partial<TRefreshToken>) {
+        return this.prisma.refreshToken.update({
+            where: { id },
+            data,
+        });
+    }
+
+    async rotateToken(
+        oldTokenId: string,
+        userId: string,
+        newToken: string,
+        expiresAt: Date
+    ): Promise<TRefreshToken> {
+        return this.prisma.$transaction(async (tx) => {
+            const created = await tx.refreshToken.create({
+                data: {
+                    userId,
+                    token: newToken,
+                    expiresAt,
+                },
+            });
+
+            await tx.refreshToken.update({
+                where: { id: oldTokenId },
+                data: {
+                    revokedAt: dayjs().toDate(),
+                    replacedByTokenId: created.id,
+                },
+            });
+
+            return created;
         });
     }
 }
