@@ -24,15 +24,13 @@ function createApiClient(): AxiosInstance {
   })
 
   instance.interceptors.request.use(async (config) => {
-    const isRefresh = config.url?.includes("/auth/refresh")
 
-    if (!isRefresh) {
-      const token = await getTokenFromCookie("accessToken")
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-      }
-    }
-    return config
+    if (config.url?.includes("/auth/refresh")) return config;
+
+    const token = await getTokenFromCookie("accessToken");
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+
+    return config;
   })
 
   let isRefreshing = false
