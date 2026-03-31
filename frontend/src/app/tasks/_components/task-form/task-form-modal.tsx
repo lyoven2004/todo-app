@@ -35,7 +35,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { TaskForm } from "./task-form"
 import { handleMutationError } from "@/utils/get-error-message"
 import { TCategoryDto } from "@/app/categories/_config/category.schema"
-import { deleteCategory } from "@/axios/category-api"
 import { useCategories, useCategoryActions } from "@/app/categories/_hooks/category.hook"
 
 type TTaskFormModalProps = {

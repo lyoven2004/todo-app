@@ -15,14 +15,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { PRIORITY_OPTIONS, SORT_OPTIONS, TASK_STATUS_OPTIONS } from "@/constants/task"
+import { PRIORITY_OPTIONS, SORT_OPTIONS } from "@/constants/task"
 import { TTaskPriority, TTaskSortBy, TTaskStatus } from "../../_config/task.schema"
-
-export type TToolbarCategory = {
-    id: string
-    name: string
-    color?: string
-}
+import { TCategoryDto } from "@/app/categories/_config/category.schema"
+import { useCategories } from "@/app/categories/_hooks/category.hook"
 
 type TToolbarProps = {
     searchInput: string
@@ -36,21 +32,12 @@ type TToolbarProps = {
 
     categoryFilter: string | null
     onCategoryFilterChange: (value: string | null) => void
-    categories?: TToolbarCategory[]
+    categories?: TCategoryDto[]
 
     sortBy: TTaskSortBy
     onSortChange: (value: TTaskSortBy) => void
 
     onAddTask: () => void
-}
-
-function getCategoryDotClass(color?: string) {
-    switch (color) {
-        case "blue":
-            return "bg-category-blue"
-        case "green":
-            return "bg-category-green"
-    }
 }
 
 export function Toolbar({
@@ -62,7 +49,6 @@ export function Toolbar({
     onPriorityFilterChange,
     categoryFilter,
     onCategoryFilterChange,
-    categories = [],
     sortBy,
     onSortChange,
     onAddTask,
@@ -71,7 +57,7 @@ export function Toolbar({
         statusFilter !== null ||
         priorityFilter !== null ||
         categoryFilter !== null
-
+    const { categories } = useCategories()
     return (
         <section
             className={cn(
@@ -157,10 +143,8 @@ export function Toolbar({
                             >
                                 <span className="flex items-center gap-2">
                                     <span
-                                        className={cn(
-                                            "size-2 rounded-full",
-                                            getCategoryDotClass(category.color)
-                                        )}
+                                        className=
+                                        "size-2 rounded-full bg-category"
                                     />
                                     {category.name}
                                 </span>
@@ -195,7 +179,7 @@ export function Toolbar({
 
                 <Button
                     size="sm"
-                    onClick={onAddTask}
+                    onClick={() => onAddTask()}
                     className="h-10 rounded-xl px-4 background-sidebar-primary"
                 >
                     <Plus className="size-4" />

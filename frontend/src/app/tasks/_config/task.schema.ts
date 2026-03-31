@@ -4,7 +4,6 @@ export const taskSortBySchema = z.enum([
   "newest",
   "oldest",
   "dueDate",
-  "priority"
 ])
 
 export const taskStatusSchema = z.enum([

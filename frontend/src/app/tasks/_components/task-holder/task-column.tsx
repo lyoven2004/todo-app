@@ -3,7 +3,7 @@
 import { getTaskList } from "@/axios/task-api"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { SORT_MAP, STATUS_ICONS, STATUS_UI_CONFIG } from "@/constants/task"
+import { SORT_QUERY_MAP, STATUS_ICONS, STATUS_UI_CONFIG } from "@/constants/task"
 import { cn } from "@/lib/utils"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { Plus } from "lucide-react"
@@ -43,13 +43,16 @@ export function TaskColumn({
   const StatusComponent = STATUS_ICONS[status]
 
   const taskParams = useMemo(() => {
+    const sortQuery = SORT_QUERY_MAP[sortBy]
+
     return {
       limit: 5,
       search: searchQuery || undefined,
       status,
       priority: priorityFilter ?? undefined,
       categoryId: categoryFilter ?? undefined,
-      sortBy: SORT_MAP[sortBy],
+      sortBy: sortQuery.sortBy,
+      order: sortQuery.order
     }
   }, [searchQuery, status, priorityFilter, categoryFilter, sortBy])
 
@@ -65,7 +68,7 @@ export function TaskColumn({
       searchQuery,
       priorityFilter,
       categoryFilter,
-      sortBy
+      sortBy,
     ],
     initialPageParam: 1,
     queryFn: ({ pageParam = 1 }) => getTaskList({ ...taskParams, page: pageParam }),
