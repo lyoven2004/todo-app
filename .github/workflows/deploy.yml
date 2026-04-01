@@ -64,7 +64,6 @@ jobs:
             cd /home/ubuntu/todo-app
             sudo docker compose pull backend
             sudo docker compose up -d backend
-            sudo docker compose exec -T backend npx prisma migrate deploy
 
   deploy_frontend:
     needs: detect_changed_paths
