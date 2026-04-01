@@ -31,6 +31,7 @@ jobs:
               - '.github/workflows/deploy.yml'
 
   deploy_backend:
+    environment: backend
     needs: detect_changed_paths
     if: needs.detect_changed_paths.outputs.backend == 'true'
     runs-on: ubuntu-latest
