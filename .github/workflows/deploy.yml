@@ -1,39 +1,21 @@
 name: CD
 
 on:
-  push:
-    branches:
-      - develop
-      - main
   workflow_dispatch:
+    inputs:
+      stage:
+        description: "Choose stage to deploy"
+        required: true
+        type: choice
+        options:
+          - frontend
+          - backend
+          - all
 
 jobs:
-  detect_changed_paths:
-    runs-on: ubuntu-latest
-    outputs:
-      backend: ${{ steps.filter.outputs.backend }}
-      frontend: ${{ steps.filter.outputs.frontend }}
-
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-
-      - name: Detect changed paths
-        id: filter
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            backend:
-              - 'backend/**'
-              - '.github/workflows/deploy.yml'
-            frontend:
-              - 'frontend/**'
-              - '.github/workflows/deploy.yml'
-
   deploy_backend:
     environment: backend
-    needs: detect_changed_paths
-    if: needs.detect_changed_paths.outputs.backend == 'true'
+    if: ${{ github.event.inputs.stage == 'backend' || github.event.inputs.stage == 'all' }}
     runs-on: ubuntu-latest
 
     defaults:
@@ -69,8 +51,7 @@ jobs:
 
   deploy_frontend:
     environment: frontend
-    needs: detect_changed_paths
-    if: needs.detect_changed_paths.outputs.frontend == 'true'
+    if: ${{ github.event.inputs.stage == 'frontend' || github.event.inputs.stage == 'all' }}
     runs-on: ubuntu-latest
 
     defaults:
