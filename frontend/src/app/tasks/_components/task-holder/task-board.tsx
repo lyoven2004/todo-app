@@ -9,7 +9,6 @@ import { TCategoryDto } from "@/app/categories/_config/category.schema"
 type TTaskBoardProps = {
   searchQuery: string
 
-  statusFilter: TTaskStatus | null
   priorityFilter: TTaskPriority | null
   categoryFilter: string | null
   sortBy: TTaskSortBy
@@ -23,7 +22,6 @@ type TTaskBoardProps = {
 
 export function TaskBoard({
   searchQuery,
-  statusFilter,
   priorityFilter,
   categoryFilter,
   sortBy,

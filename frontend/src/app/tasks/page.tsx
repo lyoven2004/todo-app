@@ -2,18 +2,16 @@
 
 import { LayoutGrid } from "lucide-react"
 import { useState } from "react"
-import { toast } from "sonner"
 import { useDebounce } from "../hooks/use-debounce"
+import { TaskFormModal } from "./_components/task-form/task-form-modal"
 import { TaskBoard } from "./_components/task-holder/task-board"
 import { Toolbar } from "./_components/toolbar"
-import { TTaskFormMode, TTaskFormValues, TTaskItemDto, TTaskPriority, TTaskSortBy, TTaskStatus } from "./_config/task.schema"
-import { TaskFormModal } from "./_components/task-form/task-form-modal"
+import { TTaskFormMode, TTaskItemDto, TTaskPriority, TTaskSortBy, TTaskStatus } from "./_config/task.schema"
 
 export default function TaskPage() {
 
     const [searchInput, setSearchInput] = useState("")
     const searchQuery = useDebounce(searchInput.trim(), 400)
-    const [statusFilter, setStatusFilter] = useState<TTaskStatus | null>(null)
     const [priorityFilter, setPriorityFilter] = useState<TTaskPriority | null>(null)
     const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
     const [sortBy, setSortBy] = useState<TTaskSortBy>("newest")
@@ -82,8 +80,6 @@ export default function TaskPage() {
                     <Toolbar
                         searchInput={searchInput}
                         setSearchInput={setSearchInput}
-                        statusFilter={statusFilter}
-                        onStatusFilterChange={setStatusFilter}
                         priorityFilter={priorityFilter}
                         onPriorityFilterChange={setPriorityFilter}
                         categories={[]}
@@ -97,7 +93,6 @@ export default function TaskPage() {
 
                 <TaskBoard
                     searchQuery={searchQuery}
-                    statusFilter={statusFilter}
                     priorityFilter={priorityFilter}
                     categoryFilter={categoryFilter}
                     sortBy={sortBy}

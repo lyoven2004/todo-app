@@ -54,7 +54,7 @@ export function TaskFormModal({
     task,
 }: TTaskFormModalProps) {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-    const { categories, isLoading } = useCategories()
+    const { categories } = useCategories()
 
     const { title, description } = TASK_FORM_CONFIG[mode]
 
