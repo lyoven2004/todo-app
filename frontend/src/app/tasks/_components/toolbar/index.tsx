@@ -24,9 +24,6 @@ type TToolbarProps = {
     searchInput: string
     setSearchInput: (value: string) => void
 
-    statusFilter: TTaskStatus | null
-    onStatusFilterChange: (value: TTaskStatus | null) => void
-
     priorityFilter: TTaskPriority | null
     onPriorityFilterChange: (value: TTaskPriority | null) => void
 
@@ -43,8 +40,6 @@ type TToolbarProps = {
 export function Toolbar({
     searchInput,
     setSearchInput,
-    statusFilter,
-    onStatusFilterChange,
     priorityFilter,
     onPriorityFilterChange,
     categoryFilter,
@@ -53,10 +48,6 @@ export function Toolbar({
     onSortChange,
     onAddTask,
 }: TToolbarProps) {
-    const hasActiveFilters =
-        statusFilter !== null ||
-        priorityFilter !== null ||
-        categoryFilter !== null
     const { categories } = useCategories()
     return (
         <section
